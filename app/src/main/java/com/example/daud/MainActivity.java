@@ -43,6 +43,14 @@ public class MainActivity extends AppCompatActivity {
     private NewsViewModel viewModel;
     private boolean isNightMode = false;
 
+    // Danh sách ID đầy đủ của 20 kênh trong trang "Kênh của tôi"
+    private final int[] allChannelIds = {
+            R.id.chanTrangChu, R.id.chanBongDa, R.id.chanXaHoi, R.id.chanGiaiTri, R.id.chanTheGioi,
+            R.id.chanKinhTe, R.id.chanCongNghe, R.id.chanThoiTrang, R.id.chanTheThao, R.id.chanPhapLuat,
+            R.id.chanDuLich, R.id.chanGame, R.id.chanSucKhoe, R.id.chanAmThuc, R.id.chanXeCo,
+            R.id.chanDoiSong, R.id.chanGiaoDuc, R.id.chanHotGirls, R.id.chanLamDep, R.id.chanTinhYeu
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,16 +64,17 @@ public class MainActivity extends AppCompatActivity {
         setupTabs();
         setupChannelClicks();
         
-        // QUAN TRỌNG: Lắng nghe dữ liệu từ Database
+        // Lắng nghe dữ liệu bài báo từ Database
         viewModel.getArticles().observe(this, articles -> {
-            if (articles != null && !articles.isEmpty()) {
+            if (articles != null) {
                 articleList.clear();
                 articleList.addAll(articles);
                 adapter.notifyDataSetChanged();
+                rvNews.scrollToPosition(0);
             }
         });
 
-        // Chỉ nạp dữ liệu mẫu nếu Database thực sự trống rỗng
+        // Nạp dữ liệu mẫu nếu Database trống
         viewModel.getCategories().observe(this, categories -> {
             if (categories == null || categories.isEmpty()) {
                 initializeDefaultData();
@@ -131,24 +140,60 @@ public class MainActivity extends AppCompatActivity {
         profileContainer.setBackgroundColor(bgColor);
         channelsContainer.setBackgroundColor(bgColor);
         
+        View profileScrollView = findViewById(R.id.profileScrollView);
+        if (profileScrollView != null) profileScrollView.setBackgroundColor(bgColor);
+
         adapter.setNightMode(isNightMode);
 
         findViewById(R.id.categoryBar).setBackgroundColor(isNightMode ? Color.parseColor("#1A1A1A") : Color.WHITE);
         findViewById(R.id.bottomNav).setBackgroundColor(isNightMode ? Color.BLACK : Color.WHITE);
+
+        // Cập nhật trang Profile
+        int[] profileTextIds = {R.id.tvTheoDoi, R.id.tvThongBao, R.id.tvNightMode, 
+                                R.id.menuLuu, R.id.menuLichSu, R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName, R.id.tvFooterId};
+        for (int id : profileTextIds) {
+            TextView tv = findViewById(id);
+            if (tv != null) tv.setTextColor(isNightMode && id == R.id.tvFooterId ? Color.GRAY : textColor);
+        }
+        
+        TextView tvNightModeLabel = findViewById(R.id.tvNightMode);
+        if (tvNightModeLabel != null) tvNightModeLabel.setText(isNightMode ? "Chế độ ngày" : "Ban đêm");
+
+        // Cập nhật trang Kênh
+        TextView tvChanTitle = findViewById(R.id.tvMyChannelsTitle);
+        TextView tvChanDesc = findViewById(R.id.tvMyChannelsDesc);
+        TextView tvChanRecTitle = findViewById(R.id.tvRecommendedChannelsTitle);
+        ImageView ivClose = findViewById(R.id.btnCloseChannels);
+        
+        if (tvChanTitle != null) tvChanTitle.setTextColor(textColor);
+        if (tvChanDesc != null) tvChanDesc.setTextColor(Color.GRAY);
+        if (tvChanRecTitle != null) tvChanRecTitle.setTextColor(textColor);
+        if (ivClose != null) ivClose.setColorFilter(textColor);
+
+        for (int id : allChannelIds) {
+            TextView tv = findViewById(id);
+            if (tv != null) {
+                tv.setBackgroundColor(itemBg);
+                if (tv.getText().toString().equals("Bóng đá")) tv.setTextColor(Color.RED);
+                else tv.setTextColor(textColor);
+            }
+        }
 
         updateNavColor(homeContainer.getVisibility() == View.VISIBLE);
         updateTabColors();
     }
 
     private void updateTabColors() {
-        int textColor = isNightMode ? Color.LTGRAY : Color.parseColor("#555555");
+        int activeColor = ContextCompat.getColor(this, android.R.color.holo_red_dark);
+        int inactiveColor = isNightMode ? Color.LTGRAY : Color.parseColor("#555555");
+        
         TextView[] tabs = {tabTrangChu, tabBongDa, tabVideo, tabXaHoi, tabGiaiTri, tabTheGioi};
         for (TextView tab : tabs) {
             if (tab != null) {
-                if (tab.getText().toString().equals("Trang chủ") && !isNightMode) {
-                    tab.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                if (tab.getTypeface() != null && tab.getTypeface().isBold()) {
+                    tab.setTextColor(activeColor);
                 } else {
-                    tab.setTextColor(textColor);
+                    tab.setTextColor(inactiveColor);
                 }
             }
         }
@@ -172,11 +217,20 @@ public class MainActivity extends AppCompatActivity {
             channelsContainer.setVisibility(View.GONE);
             showHomePage();
             String categoryName = ((TextView)v).getText().toString();
-            viewModel.setCategory(categoryName);
+            
+            // Tìm Tab ID tương ứng để cập nhật UI
+            int tabId = -1;
+            if (categoryName.equals("Trang chủ")) tabId = R.id.tabTrangChu;
+            else if (categoryName.equals("Bóng đá")) tabId = R.id.tabBongDa;
+            else if (categoryName.equals("Video")) tabId = R.id.tabVideo;
+            else if (categoryName.equals("Xã hội")) tabId = R.id.tabXaHoi;
+            else if (categoryName.equals("Giải trí")) tabId = R.id.tabGiaiTri;
+            else if (categoryName.equals("Thế giới")) tabId = R.id.tabTheGioi;
+            
+            switchCategory(tabId, categoryName);
         };
 
-        int[] channelIds = {R.id.chanTrangChu, R.id.chanBongDa, R.id.chanXaHoi, R.id.chanGiaiTri, R.id.chanTheGioi};
-        for (int id : channelIds) {
+        for (int id : allChannelIds) {
             View view = findViewById(id);
             if (view != null) view.setOnClickListener(channelListener);
         }
@@ -184,10 +238,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void switchCategory(int tabId, String categoryName) {
         resetTabs();
-        TextView selectedTab = findViewById(tabId);
-        if (selectedTab != null) {
-            selectedTab.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
-            selectedTab.setTypeface(null, Typeface.BOLD);
+        if (tabId != -1) {
+            TextView selectedTab = findViewById(tabId);
+            if (selectedTab != null) {
+                selectedTab.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                selectedTab.setTypeface(null, Typeface.BOLD);
+            }
         }
         viewModel.setCategory(categoryName);
     }
@@ -204,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeDefaultData() {
-        // Chỉ chạy khi Database trống
         viewModel.insertCategories(Arrays.asList(new Category("Trang chủ", true), new Category("Bóng đá", true)));
         viewModel.insertArticles(Collections.singletonList(new Article("Chào mừng", "Hệ thống", "Bây giờ", null, 1, "Chào mừng bạn đến với ứng dụng tin tức.")));
     }

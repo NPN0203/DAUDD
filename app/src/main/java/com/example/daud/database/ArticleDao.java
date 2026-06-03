@@ -1,5 +1,6 @@
 package com.example.daud.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -13,7 +14,10 @@ public interface ArticleDao {
     void insertArticles(List<Article> articles);
 
     @Query("SELECT * FROM articles")
-    List<Article> getAllArticles();
+    LiveData<List<Article>> getAllArticles(); // Trả về LiveData để quan sát biến động
+
+    @Query("SELECT * FROM articles WHERE source = :categoryName")
+    LiveData<List<Article>> getArticlesByCategory(String categoryName);
 
     @Query("DELETE FROM articles")
     void deleteAll();

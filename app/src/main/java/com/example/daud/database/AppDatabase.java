@@ -8,7 +8,7 @@ import androidx.room.TypeConverters;
 import com.example.daud.model.Article;
 import com.example.daud.model.Category;
 
-@Database(entities = {Article.class, Category.class}, version = 2)
+@Database(entities = {Article.class, Category.class}, version = 3)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;

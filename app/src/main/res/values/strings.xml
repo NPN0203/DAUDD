@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">DAUD</string>
+    <string name="search_hint">Nhập từ khóa</string>
+    <string name="tab_home">Trang chủ</string>
+    <string name="tab_football">Bóng đá</string>
+    <string name="tab_video">Video</string>
+    <string name="tab_social">Xã hội</string>
+    <string name="tab_entertainment">Giải trí</string>
+    <string name="tab_world">Thế giới</string>
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_explore">Khám phá</string>
+    <string name="nav_me">Tôi</string>
+    <string name="night_mode_on">Chế độ ngày</string>
+    <string name="night_mode_off">Ban đêm</string>
+    <string name="my_channels">Kênh của tôi</string>
+    <string name="edit_channels">Chỉnh sửa</string>
+    <string name="channels_desc">Nhấn và giữ để di chuyển hoặc xóa kênh</string>
+    <string name="recommended_channels">Kênh đề xuất</string>
+    <string name="add_channels_hint">Nhấn để thêm vào Kênh của tôi</string>
 </resources>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <!-- Header: Previous, Title, Next -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <ImageButton
+            android:id="@+id/btnPrevMonth"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_media_previous"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/prev_month" />
+
+        <TextView
+            android:id="@+id/tvCalendarHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <ImageButton
+            android:id="@+id/btnNextMonth"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_media_next"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/next_month" />
+    </LinearLayout>
+
+    <!-- Header days row (static) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        <TextView style="@style/CalendarHeaderDay" android:text="@string/day_sun" />
+        <TextView style="@style/CalendarHeaderDay" android:text="@string/day_mon" />
+        <TextView style="@style/CalendarHeaderDay" android:text="@string/day_tue" />
+        <TextView style="@style/CalendarHeaderDay" android:text="@string/day_wed" />
+        <TextView style="@style/CalendarHeaderDay" android:text="@string/day_thu" />
+        <TextView style="@style/CalendarHeaderDay" android:text="@string/day_fri" />
+        <TextView style="@style/CalendarHeaderDay" android:text="@string/day_sat" />
+    </LinearLayout>
+
+    <!-- Calendar Grid -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="300dp">
+        <GridLayout
+            android:id="@+id/calendarGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="7"
+            android:alignmentMode="alignBounds"
+            android:orientation="horizontal">
+            <!-- Items added dynamically in MainActivity.java -->
+        </GridLayout>
+    </ScrollView>
+
+    <!-- Footer: Close Button -->
+    <Button
+        android:id="@+id/btnCloseLunar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:text="@string/close_dialog"
+        style="@style/Widget.Material3.Button.TextButton"/>
+
+</LinearLayout>

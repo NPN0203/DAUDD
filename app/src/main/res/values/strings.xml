@@ -19,7 +19,7 @@
     <string name="recommended_channels">Kênh đề xuất</string>
     <string name="add_channels_hint">Nhấn để thêm vào Kênh của tôi</string>
 
-    <!-- Explore Page Strings -->
+    <!-- Explore Page -->
     <string name="explore_search_hint">Tìm kiếm tin tức, chủ đề...</string>
     <string name="trending_title">Xu hướng</string>
     <string name="tag_gold">#GiáVàng</string>
@@ -34,4 +34,18 @@
     <string name="utility_lunar">Lịch âm</string>
     <string name="explore_suggestion_title">Có thể bạn quan tâm</string>
     <string name="sample_article_title">Khám phá vẻ đẹp kỳ ảo của hang động lớn nhất thế giới tại Việt Nam</string>
+
+    <!-- Calendar -->
+    <string name="day_sun">CN</string>
+    <string name="day_mon">T2</string>
+    <string name="day_tue">T3</string>
+    <string name="day_wed">T4</string>
+    <string name="day_thu">T5</string>
+    <string name="day_fri">T6</string>
+    <string name="day_sat">T7</string>
+    <string name="prev_month">Trước</string>
+    <string name="next_month">Sau</string>
+    <string name="calendar_header_format">Tháng %1$02d/%2$d</string>
+    <string name="lunar_day_full_format">%1$d/%2$d</string>
+    <string name="close_dialog">Đóng</string>
 </resources>

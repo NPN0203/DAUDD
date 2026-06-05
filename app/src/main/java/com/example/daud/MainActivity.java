@@ -3,10 +3,15 @@ package com.example.daud;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -16,11 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.daud.adapter.NewsAdapter;
 import com.example.daud.model.Article;
 import com.example.daud.model.Category;
+import com.example.daud.util.LunarCalendar;
 import com.example.daud.viewmodel.NewsViewModel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,9 +48,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView btnOpenChannels, btnCloseChannels;
     private TextView tabTrangChu, tabBongDa, tabVideo, tabXaHoi, tabGiaiTri, tabTheGioi;
+    private TextView utLunar;
 
     private NewsViewModel viewModel;
     private boolean isNightMode = false;
+    private final Calendar currentCalendar = Calendar.getInstance();
 
     private final int[] allChannelIds = {
             R.id.chanTrangChu, R.id.chanBongDa, R.id.chanXaHoi, R.id.chanGiaiTri, R.id.chanTheGioi,
@@ -63,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         setupNavigation();
         setupTabs();
         setupChannelClicks();
+        setupExploreUtilities();
         
         viewModel.getArticles().observe(this, articles -> {
             if (articles != null) {
@@ -108,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         tabXaHoi = findViewById(R.id.tabXaHoi);
         tabGiaiTri = findViewById(R.id.tabGiaiTri);
         tabTheGioi = findViewById(R.id.tabTheGioi);
+        utLunar = findViewById(R.id.utLunar);
     }
 
     private void setupRecyclerView() {
@@ -130,6 +142,94 @@ public class MainActivity extends AppCompatActivity {
         View btnNightMode = findViewById(R.id.btnNightMode);
         if (btnNightMode != null) {
             btnNightMode.setOnClickListener(v -> toggleNightMode());
+        }
+    }
+
+    private void setupExploreUtilities() {
+        if (utLunar != null) {
+            String todayLunar = LunarCalendar.getTodayLunar();
+            utLunar.setText(todayLunar);
+            utLunar.setOnClickListener(v -> showLunarCalendarDialog());
+        }
+        
+        View utWeather = findViewById(R.id.utWeather);
+        if (utWeather != null) {
+            utWeather.setOnClickListener(v -> Toast.makeText(this, "Tính năng Thời tiết đang cập nhật", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    private void showLunarCalendarDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_lunar_calendar, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        TextView tvHeader = dialogView.findViewById(R.id.tvCalendarHeader);
+        GridLayout gridLayout = dialogView.findViewById(R.id.calendarGrid);
+        ImageButton btnPrev = dialogView.findViewById(R.id.btnPrevMonth);
+        ImageButton btnNext = dialogView.findViewById(R.id.btnNextMonth);
+
+        updateCalendarGrid(tvHeader, gridLayout);
+
+        btnPrev.setOnClickListener(v -> {
+            currentCalendar.add(Calendar.MONTH, -1);
+            updateCalendarGrid(tvHeader, gridLayout);
+        });
+
+        btnNext.setOnClickListener(v -> {
+            currentCalendar.add(Calendar.MONTH, 1);
+            updateCalendarGrid(tvHeader, gridLayout);
+        });
+
+        dialog.show();
+    }
+
+    private void updateCalendarGrid(TextView tvHeader, GridLayout gridLayout) {
+        if (gridLayout == null || tvHeader == null) return;
+        gridLayout.removeAllViews();
+        
+        int month = currentCalendar.get(Calendar.MONTH) + 1;
+        int year = currentCalendar.get(Calendar.YEAR);
+        tvHeader.setText(getString(R.string.calendar_header_format, month, year));
+
+        Calendar cal = (Calendar) currentCalendar.clone();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // Sunday = 1, Monday = 2...
+        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        // 1. Padding for first week (Spacers)
+        for (int i = 1; i < firstDayOfWeek; i++) {
+            View spacer = new View(this);
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            params.width = 0;
+            params.height = 1;
+            spacer.setLayoutParams(params);
+            gridLayout.addView(spacer);
+        }
+
+        // 2. Add Day Views
+        for (int i = 1; i <= daysInMonth; i++) {
+            View dayView = LayoutInflater.from(this).inflate(R.layout.item_calendar_day, gridLayout, false);
+            TextView tvSolar = dayView.findViewById(R.id.tvSolarDay);
+            TextView tvLunar = dayView.findViewById(R.id.tvLunarDay);
+
+            tvSolar.setText(String.valueOf(i));
+            LunarCalendar.LunarDate ld = LunarCalendar.getLunarDate(i, cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+            tvLunar.setText(String.valueOf(ld.day));
+            
+            // Show Month/Year if it's the 1st of the lunar month
+            if (ld.day == 1) {
+                tvLunar.setText(getString(R.string.lunar_day_full_format, ld.day, ld.month));
+            }
+
+            // Important: Use weight to distribute 7 columns evenly
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            params.width = 0;
+            dayView.setLayoutParams(params);
+
+            gridLayout.addView(dayView);
         }
     }
 

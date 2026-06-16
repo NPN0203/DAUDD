@@ -19,7 +19,6 @@ public interface ArticleDao {
     void insertArticle(Article article);
 
     @Query("SELECT * FROM articles ORDER BY id DESC")
-    @Query("SELECT * FROM articles")
     LiveData<List<Article>> getAllArticles();
 
     @Query("SELECT * FROM articles WHERE source = :categoryName")

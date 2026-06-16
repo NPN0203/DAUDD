@@ -22,6 +22,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "daud_news_stable.db")
+                            .createFromAsset("databases/daud_news_stable.db")
                             .fallbackToDestructiveMigration()
                             .build();
                 }

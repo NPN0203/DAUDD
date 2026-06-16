@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/exploreScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:id="@+id/exploreRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Ô tìm kiếm -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="#F5F5F5"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/ic_menu_search"
+                android:contentDescription="@null"
+                app:tint="#888888" />
+            <EditText
+                android:id="@+id/etExploreSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/explore_search_hint"
+                android:background="@null"
+                android:layout_marginStart="8dp"
+                android:textSize="14sp"
+                android:inputType="text"
+                android:importantForAutofill="no" />
+        </LinearLayout>
+
+        <!-- Xu hướng (Trending) -->
+        <TextView
+            android:id="@+id/tvTrendingHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/trending_title"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="24dp"
+            android:textColor="#333333" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+            <com.google.android.material.chip.Chip android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tag_gold" />
+            <com.google.android.material.chip.Chip android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tag_football_vn" />
+            <com.google.android.material.chip.Chip android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tag_ai" />
+            <com.google.android.material.chip.Chip android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tag_iphone" />
+            <com.google.android.material.chip.Chip android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tag_travel" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Tiện ích -->
+        <TextView
+            android:id="@+id/tvUtilitiesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/utilities_title"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="24dp"
+            android:textColor="#333333" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="4"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                style="@style/ExploreUtilityItem"
+                android:id="@+id/utWeather"
+                android:text="@string/utility_weather"
+                app:drawableTopCompat="@android:drawable/ic_menu_myplaces"
+                app:drawableTint="#4CAF50"
+                android:drawablePadding="8dp" />
+
+            <TextView
+                style="@style/ExploreUtilityItem"
+                android:id="@+id/utGold"
+                android:text="@string/utility_gold"
+                app:drawableTopCompat="@android:drawable/btn_star_big_on"
+                app:drawableTint="#FFC107"
+                android:drawablePadding="8dp" />
+
+            <TextView
+                style="@style/ExploreUtilityItem"
+                android:id="@+id/utLottery"
+                android:text="@string/utility_lottery"
+                app:drawableTopCompat="@android:drawable/ic_menu_agenda"
+                app:drawableTint="#2196F3"
+                android:drawablePadding="8dp" />
+
+            <TextView
+                style="@style/ExploreUtilityItem"
+                android:id="@+id/utLunar"
+                android:text="@string/utility_lunar"
+                app:drawableTopCompat="@android:drawable/ic_menu_day"
+                app:drawableTint="#9C27B0"
+                android:drawablePadding="8dp" />
+        </GridLayout>
+
+        <!-- Tin nổi bật đề xuất -->
+        <TextView
+            android:id="@+id/tvSuggestionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/explore_suggestion_title"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="24dp"
+            android:textColor="#333333" />
+
+        <ImageView
+            android:id="@+id/ivExploreSuggestion"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:background="#EEEEEE"
+            android:contentDescription="@string/explore_suggestion_title" />
+        <TextView
+            android:id="@+id/tvExploreSuggestionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/sample_article_title"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">DAUD</string>
+    <string name="search_hint">Nhập từ khóa</string>
+    <string name="tab_home">Trang chủ</string>
+    <string name="tab_football">Bóng đá</string>
+    <string name="tab_video">Video</string>
+    <string name="tab_social">Xã hội</string>
+    <string name="tab_entertainment">Giải trí</string>
+    <string name="tab_world">Thế giới</string>
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_explore">Khám phá</string>
+    <string name="nav_coin">Xu</string>
+    <string name="nav_me">Tôi</string>
+    <string name="night_mode_on">Chế độ ngày</string>
+    <string name="night_mode_off">Ban đêm</string>
+    <string name="my_channels">Kênh của tôi</string>
+    <string name="edit_channels">Chỉnh sửa</string>
+    <string name="channels_desc">Nhấn và giữ để di chuyển hoặc xóa kênh</string>
+    <string name="recommended_channels">Kênh đề xuất</string>
+    <string name="add_channels_hint">Nhấn để thêm vào Kênh của tôi</string>
+
+    <!-- Explore Page -->
+    <string name="explore_search_hint">Tìm kiếm tin tức, chủ đề...</string>
+    <string name="trending_title">Xu hướng</string>
+    <string name="tag_gold">#GiáVàng</string>
+    <string name="tag_football_vn">#ĐộiTuyểnViệtNam</string>
+    <string name="tag_ai">#AI_ChatGPT</string>
+    <string name="tag_iphone">#iPhone16</string>
+    <string name="tag_travel">#DuLịchHè</string>
+    <string name="utilities_title">Tiện ích</string>
+    <string name="utility_weather">Thời tiết</string>
+    <string name="utility_gold">Giá vàng</string>
+    <string name="utility_lottery">Xổ số</string>
+    <string name="utility_lunar">Lịch âm</string>
+    <string name="explore_suggestion_title">Có thể bạn quan tâm</string>
+    <string name="sample_article_title">Khám phá vẻ đẹp kỳ ảo của hang động lớn nhất thế giới tại Việt Nam</string>
+
+    <!-- Calendar -->
+    <string name="day_sun">CN</string>
+    <string name="day_mon">T2</string>
+    <string name="day_tue">T3</string>
+    <string name="day_wed">T4</string>
+    <string name="day_thu">T5</string>
+    <string name="day_fri">T6</string>
+    <string name="day_sat">T7</string>
+    <string name="prev_month">Trước</string>
+    <string name="next_month">Sau</string>
+    <string name="calendar_header_format">Tháng %1$02d/%2$d</string>
+    <string name="lunar_day_full_format">%1$d/%2$d</string>
+    <string name="close_dialog">Đóng</string>
+
+    <!-- News Detail -->
+    <string name="news_detail_title">Chi tiết bài báo</string>
+    <string name="action_save">Lưu</string>
+    <string name="action_share">Chia sẻ</string>
+    <string name="desc_back">Quay lại</string>
+    <string name="desc_article_image">Ảnh bài báo</string>
+    <string name="desc_save_icon">Biểu tượng lưu</string>
+    <string name="desc_share_icon">Biểu tượng chia sẻ</string>
+</resources>

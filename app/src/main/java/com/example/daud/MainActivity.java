@@ -4,17 +4,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.GridLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,7 +20,6 @@ import com.example.daud.util.LunarCalendar;
 import com.example.daud.viewmodel.NewsViewModel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,65 +29,46 @@ public class MainActivity extends AppCompatActivity {
     private NewsAdapter adapter;
     private final List<Article> articleList = new ArrayList<>();
 
-    private ConstraintLayout mainLayout;
     private View homeContainer, profileContainer, channelsContainer, exploreContainer;
-    private LinearLayout btnNavHome, btnNavProfile, btnNavExplore;
-    private ImageView ivNavHome, ivNavProfile, ivNavExplore;
-    private TextView tvNavHome, tvNavProfile, tvNavExplore;
+    private ImageView ivNavHome, ivNavExplore, ivNavProfile;
+    private TextView tvNavHome, tvNavExplore, tvNavProfile;
     private TextView tabTrangChu, tabBongDa, tabVideo, tabXaHoi, tabGiaiTri, tabTheGioi;
 
     private NewsViewModel viewModel;
     private boolean isNightMode = false;
-    private final Calendar currentCalendar = Calendar.getInstance();
+
+    private final int[] allChannelIds = {
+            R.id.chanTrangChu, R.id.chanBongDa, R.id.chanXaHoi, R.id.chanGiaiTri, R.id.chanTheGioi,
+            R.id.chanKinhTe, R.id.chanCongNghe, R.id.chanThoiTrang, R.id.chanTheThao, R.id.chanPhapLuat,
+            R.id.chanDuLich, R.id.chanGame, R.id.chanSucKhoe, R.id.chanAmThuc, R.id.chanXeCo,
+            R.id.chanDoiSong, R.id.chanGiaoDuc, R.id.chanHotGirls, R.id.chanLamDep, R.id.chanTinhYeu
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         viewModel = new ViewModelProvider(this).get(NewsViewModel.class);
-
+        
         initViews();
         setupRecyclerView();
         setupNavigation();
         setupTabs();
-        setupExploreUtilities();
-        setupProfileMenu();
-        
-        viewModel.getArticles().observe(this, articles -> {
-            if (articles != null) {
-                articleList.clear();
-                articleList.addAll(articles);
-                adapter.notifyDataSetChanged();
-            }
-        });
-
-        viewModel.getCategories().observe(this, categories -> {
-            if (categories == null || categories.isEmpty()) {
-                initializeDefaultData();
-            }
-        });
+        setupChannelClicks();
+        observeData();
     }
 
     private void initViews() {
-        mainLayout = findViewById(R.id.mainLayout);
         homeContainer = findViewById(R.id.homeContainer);
         profileContainer = findViewById(R.id.profileContainer);
         channelsContainer = findViewById(R.id.channelsContainer);
         exploreContainer = findViewById(R.id.exploreContainer);
-
-        btnNavHome = findViewById(R.id.btnNavHome);
-        btnNavProfile = findViewById(R.id.btnNavProfile);
-        btnNavExplore = findViewById(R.id.btnNavExplore);
-        
         ivNavHome = findViewById(R.id.ivNavHome);
-        ivNavProfile = findViewById(R.id.ivNavProfile);
         ivNavExplore = findViewById(R.id.ivNavExplore);
-        
+        ivNavProfile = findViewById(R.id.ivNavProfile);
         tvNavHome = findViewById(R.id.tvNavHome);
-        tvNavProfile = findViewById(R.id.tvNavProfile);
         tvNavExplore = findViewById(R.id.tvNavExplore);
-
+        tvNavProfile = findViewById(R.id.tvNavProfile);
         tabTrangChu = findViewById(R.id.tabTrangChu);
         tabBongDa = findViewById(R.id.tabBongDa);
         tabVideo = findViewById(R.id.tabVideo);
@@ -112,106 +86,105 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupNavigation() {
-        if (btnNavHome != null) btnNavHome.setOnClickListener(v -> showHomePage());
-        if (btnNavProfile != null) btnNavProfile.setOnClickListener(v -> showProfilePage());
-        if (btnNavExplore != null) btnNavExplore.setOnClickListener(v -> showExplorePage());
+    private void observeData() {
+        viewModel.getArticles().observe(this, articles -> {
+            if (articles != null) {
+                articleList.clear();
+                articleList.addAll(articles);
+                if (adapter != null) adapter.notifyDataSetChanged();
+                if (rvNews != null) rvNews.scrollToPosition(0);
+            }
+        });
+        viewModel.getCategories().observe(this, categories -> {
+            if (categories == null || categories.isEmpty()) {
+                viewModel.insertCategories(Arrays.asList(new Category("Trang chủ", true), new Category("Bóng đá", true)));
+            }
+        });
+    }
 
+    private void setupNavigation() {
+        findViewById(R.id.btnNavHome).setOnClickListener(v -> showPage(homeContainer));
+        findViewById(R.id.btnNavExplore).setOnClickListener(v -> showPage(exploreContainer));
+        findViewById(R.id.btnNavProfile).setOnClickListener(v -> showPage(profileContainer));
         View btnOpen = findViewById(R.id.btnOpenChannels);
         if (btnOpen != null) btnOpen.setOnClickListener(v -> channelsContainer.setVisibility(View.VISIBLE));
+        View btnCloseChan = findViewById(R.id.btnCloseChannels);
+        if (btnCloseChan != null) btnCloseChan.setOnClickListener(v -> channelsContainer.setVisibility(View.GONE));
         
-        View btnClose = findViewById(R.id.btnCloseChannels);
-        if (btnClose != null) btnClose.setOnClickListener(v -> channelsContainer.setVisibility(View.GONE));
-
-        View btnNight = findViewById(R.id.btnNightMode);
-        if (btnNight != null) btnNight.setOnClickListener(v -> toggleNightMode());
+        View rootProfile = findViewById(R.id.profileRootLayout);
+        if (rootProfile != null) {
+            rootProfile.findViewById(R.id.btnNightMode).setOnClickListener(v -> toggleNightMode());
+            rootProfile.findViewById(R.id.btnMenuLuu).setOnClickListener(v -> startActivity(new Intent(this, SavedArticlesActivity.class).putExtra("nightMode", isNightMode)));
+            rootProfile.findViewById(R.id.btnMenuLichSu).setOnClickListener(v -> startActivity(new Intent(this, HistoryActivity.class).putExtra("nightMode", isNightMode)));
+        }
     }
 
-    private void showHomePage() {
-        homeContainer.setVisibility(View.VISIBLE);
-        exploreContainer.setVisibility(View.GONE);
-        profileContainer.setVisibility(View.GONE);
-        updateNavColor(true, false, false);
-    }
-
-    private void showExplorePage() {
-        homeContainer.setVisibility(View.GONE);
-        exploreContainer.setVisibility(View.VISIBLE);
-        profileContainer.setVisibility(View.GONE);
-        updateNavColor(false, true, false);
-    }
-
-    private void showProfilePage() {
+    private void showPage(View page) {
         homeContainer.setVisibility(View.GONE);
         exploreContainer.setVisibility(View.GONE);
-        profileContainer.setVisibility(View.VISIBLE);
-        updateNavColor(false, false, true);
+        profileContainer.setVisibility(View.GONE);
+        channelsContainer.setVisibility(View.GONE);
+        page.setVisibility(View.VISIBLE);
+        updateNavUI(page.getId());
     }
 
-    private void updateNavColor(boolean isHome, boolean isExplore, boolean isProfile) {
-        int red = ContextCompat.getColor(this, android.R.color.holo_red_dark);
-        int gray = isNightMode ? Color.LTGRAY : Color.GRAY;
-        
-        if (ivNavHome != null) ivNavHome.setColorFilter(isHome ? red : gray);
-        if (tvNavHome != null) tvNavHome.setTextColor(isHome ? red : gray);
-        if (ivNavExplore != null) ivNavExplore.setColorFilter(isExplore ? red : gray);
-        if (tvNavExplore != null) tvNavExplore.setTextColor(isExplore ? red : gray);
-        if (ivNavProfile != null) ivNavProfile.setColorFilter(isProfile ? red : gray);
-        if (tvNavProfile != null) tvNavProfile.setTextColor(isProfile ? red : gray);
+    private void updateNavUI(int id) {
+        int active = Color.RED;
+        int inactive = isNightMode ? Color.LTGRAY : Color.GRAY;
+        ivNavHome.setColorFilter(id == R.id.homeContainer ? active : inactive);
+        tvNavHome.setTextColor(id == R.id.homeContainer ? active : inactive);
+        ivNavExplore.setColorFilter(id == R.id.exploreContainer ? active : inactive);
+        tvNavExplore.setTextColor(id == R.id.exploreContainer ? active : inactive);
+        ivNavProfile.setColorFilter(id == R.id.profileContainer ? active : inactive);
+        tvNavProfile.setTextColor(id == R.id.profileContainer ? active : inactive);
     }
 
     private void setupTabs() {
-        View.OnClickListener listener = v -> {
-            if (v instanceof TextView) {
-                String name = ((TextView) v).getText().toString();
-                switchCategory(v.getId(), name);
-            }
-        };
+        View.OnClickListener listener = v -> switchCategory(v.getId(), ((TextView) v).getText().toString());
         TextView[] tabs = {tabTrangChu, tabBongDa, tabVideo, tabXaHoi, tabGiaiTri, tabTheGioi};
         for (TextView t : tabs) if (t != null) t.setOnClickListener(listener);
     }
 
+    private void setupChannelClicks() {
+        View.OnClickListener listener = v -> {
+            String name = ((TextView) v).getText().toString();
+            showPage(homeContainer);
+            int tabId = -1;
+            if (name.equals("Trang chủ")) tabId = R.id.tabTrangChu;
+            else if (name.equals("Bóng đá")) tabId = R.id.tabBongDa;
+            else if (name.equals("Video")) tabId = R.id.tabVideo;
+            else if (name.equals("Xã hội")) tabId = R.id.tabXaHoi;
+            else if (name.equals("Giải trí")) tabId = R.id.tabGiaiTri;
+            else if (name.equals("Thế giới")) tabId = R.id.tabTheGioi;
+            switchCategory(tabId, name);
+        };
+        for (int id : allChannelIds) {
+            View v = findViewById(id);
+            if (v != null) v.setOnClickListener(listener);
+        }
+    }
+
     private void switchCategory(int id, String name) {
+        int active = Color.RED;
+        int inactive = isNightMode ? Color.LTGRAY : Color.DKGRAY;
         TextView[] tabs = {tabTrangChu, tabBongDa, tabVideo, tabXaHoi, tabGiaiTri, tabTheGioi};
-        int gray = isNightMode ? Color.LTGRAY : Color.DKGRAY;
         for (TextView t : tabs) {
             if (t != null) {
-                t.setTextColor(t.getId() == id ? Color.RED : gray);
+                t.setTextColor(t.getId() == id ? active : inactive);
                 t.setTypeface(null, t.getId() == id ? Typeface.BOLD : Typeface.NORMAL);
             }
         }
         viewModel.setCategory(name);
     }
 
-    private void setupExploreUtilities() {
-        TextView utLunar = findViewById(R.id.utLunar);
-        if (utLunar != null) {
-            utLunar.setText(LunarCalendar.getTodayLunar());
-            utLunar.setOnClickListener(v -> Toast.makeText(this, "Lịch âm: " + LunarCalendar.getTodayLunar(), Toast.LENGTH_SHORT).show());
-        }
-    }
-
-    private void setupProfileMenu() {
-        View btnLuu = findViewById(R.id.btnMenuLuu);
-        if (btnLuu != null) btnLuu.setOnClickListener(v -> startActivity(new Intent(this, SavedArticlesActivity.class)));
-        
-        View btnHis = findViewById(R.id.btnMenuLichSu);
-        if (btnHis != null) btnHis.setOnClickListener(v -> startActivity(new Intent(this, HistoryActivity.class)));
-    }
-
     private void toggleNightMode() {
         isNightMode = !isNightMode;
         int bgColor = isNightMode ? Color.BLACK : Color.WHITE;
-        if (mainLayout != null) mainLayout.setBackgroundColor(isNightMode ? Color.DKGRAY : Color.LTGRAY);
         homeContainer.setBackgroundColor(bgColor);
         exploreContainer.setBackgroundColor(bgColor);
         profileContainer.setBackgroundColor(bgColor);
+        channelsContainer.setBackgroundColor(bgColor);
         if (adapter != null) adapter.setNightMode(isNightMode);
-        updateNavColor(homeContainer.getVisibility() == View.VISIBLE, exploreContainer.getVisibility() == View.VISIBLE, profileContainer.getVisibility() == View.VISIBLE);
-    }
-
-    private void initializeDefaultData() {
-        viewModel.insertCategories(Arrays.asList(new Category("Trang chủ", true), new Category("Bóng đá", true)));
-        viewModel.insertArticles(Collections.singletonList(new Article("Chào mừng", "Trang chủ", "Vừa xong", null, 1, "Chào mừng bạn đến với ứng dụng!")));
+        showPage(profileContainer);
     }
 }

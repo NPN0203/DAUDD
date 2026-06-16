@@ -180,11 +180,46 @@ public class MainActivity extends AppCompatActivity {
     private void toggleNightMode() {
         isNightMode = !isNightMode;
         int bgColor = isNightMode ? Color.BLACK : Color.WHITE;
+        int textColor = isNightMode ? Color.WHITE : Color.parseColor("#333333");
+        int secondaryTextColor = isNightMode ? Color.LTGRAY : Color.GRAY;
+
         homeContainer.setBackgroundColor(bgColor);
         exploreContainer.setBackgroundColor(bgColor);
         profileContainer.setBackgroundColor(bgColor);
         channelsContainer.setBackgroundColor(bgColor);
-        if (adapter != null) adapter.setNightMode(isNightMode);
+
+        // Update background of components inside layout_profile.xml
+        View profileScroll = findViewById(R.id.profileScrollView);
+        if (profileScroll != null) profileScroll.setBackgroundColor(bgColor);
+
+        View categoryBar = findViewById(R.id.categoryBar);
+        if (categoryBar != null) categoryBar.setBackgroundColor(bgColor);
+
+        View bottomNav = findViewById(R.id.bottomNav);
+        if (bottomNav != null) bottomNav.setBackgroundColor(bgColor);
+
+        // Update Button text and color
+        TextView tvNightMode = findViewById(R.id.tvNightMode);
+        if (tvNightMode != null) {
+            tvNightMode.setText(isNightMode ? "Ban ngày" : "Ban đêm");
+            tvNightMode.setTextColor(textColor);
+        }
+
+        // Update other text colors in profile
+        int[] textIds = {R.id.tvTheoDoi, R.id.tvThongBao, R.id.menuLuu, R.id.menuLichSu,
+                R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName};
+        for (int id : textIds) {
+            TextView tv = findViewById(id);
+            if (tv != null) tv.setTextColor(textColor);
+        }
+        TextView tvFooterId = findViewById(R.id.tvFooterId);
+        if (tvFooterId != null) tvFooterId.setTextColor(secondaryTextColor);
+
+        if (adapter != null) {
+            adapter.setNightMode(isNightMode);
+            adapter.notifyDataSetChanged();
+        }
+
         showPage(profileContainer);
     }
 }

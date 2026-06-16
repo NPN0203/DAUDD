@@ -24,6 +24,11 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.articleList = articleList;
     }
 
+    public void setArticleList(List<Article> articleList) {
+        this.articleList = articleList;
+        notifyDataSetChanged();
+    }
+
     public void setNightMode(boolean nightMode) {
         isNightMode = nightMode;
         notifyDataSetChanged();
@@ -58,6 +63,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         Article article = articleList.get(position);
         int textColor = isNightMode ? Color.WHITE : Color.BLACK;
         int bgColor = isNightMode ? Color.parseColor("#121212") : Color.WHITE;
+        int secondaryTextColor = isNightMode ? Color.LTGRAY : Color.parseColor("#999999");
 
         holder.itemView.setBackgroundColor(bgColor);
 
@@ -65,7 +71,16 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             OneImageViewHolder h = (OneImageViewHolder) holder;
             h.tvTitle.setText(article.getTitle());
             h.tvTitle.setTextColor(textColor);
-            h.tvInfo.setText(article.getSource() + " | " + article.getTimeOrComment());
+            h.tvInfo.setText(article.getSource());
+            
+            // Logic: Chỉ hiện nhãn "Mới" nếu chưa đọc (lastReadTime == 0)
+            if (article.getLastReadTime() > 0) {
+                h.tvTagNew.setVisibility(View.GONE);
+            } else {
+                h.tvTagNew.setVisibility(View.VISIBLE);
+                h.tvTagNew.setTextColor(secondaryTextColor);
+            }
+
             if (article.getImages() != null && !article.getImages().isEmpty()) {
                 Glide.with(h.itemView.getContext()).load(article.getImages().get(0)).into(h.ivThumbnail);
             }
@@ -111,12 +126,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static class OneImageViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvInfo;
+        TextView tvTitle, tvInfo, tvTagNew;
         ImageView ivThumbnail;
         public OneImageViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvInfo = itemView.findViewById(R.id.tvInfo);
+            tvTagNew = itemView.findViewById(R.id.tvTagNew);
             ivThumbnail = itemView.findViewById(R.id.ivThumbnail);
         }
     }

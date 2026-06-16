@@ -1,5 +1,6 @@
 package com.example.daud.model;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import java.io.Serializable;
@@ -10,10 +11,10 @@ public class Article implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    public static final int TYPE_ONE_IMAGE = 1;     // Tin 1 ảnh bên phải
-    public static final int TYPE_THREE_IMAGES = 2;   // Tin 3 ảnh ngang
-    public static final int TYPE_BIG_IMAGE = 3;      // Tin ảnh lớn/Quảng cáo
-    public static final int TYPE_VIDEO = 4;          // Tin Video
+    public static final int TYPE_ONE_IMAGE = 1;
+    public static final int TYPE_THREE_IMAGES = 2;
+    public static final int TYPE_BIG_IMAGE = 3;
+    public static final int TYPE_VIDEO = 4;
 
     private String title;
     private String source;
@@ -21,6 +22,10 @@ public class Article implements Serializable {
     private List<String> images;
     private int viewType;
     private String content;
+    private boolean isSaved;
+
+    @ColumnInfo(name = "lastReadTime") // Đảm bảo Room tìm đúng cột này
+    private long lastReadTime;
 
     public Article(String title, String source, String timeOrComment, List<String> images, int viewType, String content) {
         this.title = title;
@@ -29,6 +34,8 @@ public class Article implements Serializable {
         this.images = images;
         this.viewType = viewType;
         this.content = content;
+        this.isSaved = false;
+        this.lastReadTime = 0;
     }
 
     public int getId() { return id; }
@@ -40,4 +47,8 @@ public class Article implements Serializable {
     public int getViewType() { return viewType; }
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
+    public boolean isSaved() { return isSaved; }
+    public void setSaved(boolean saved) { isSaved = saved; }
+    public long getLastReadTime() { return lastReadTime; }
+    public void setLastReadTime(long lastReadTime) { this.lastReadTime = lastReadTime; }
 }

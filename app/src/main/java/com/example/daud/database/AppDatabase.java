@@ -8,7 +8,7 @@ import androidx.room.TypeConverters;
 import com.example.daud.model.Article;
 import com.example.daud.model.Category;
 
-@Database(entities = {Article.class, Category.class}, version = 3)
+@Database(entities = {Article.class, Category.class}, version = 6) // Tăng lên 5 để nhận diện cấu trúc CSDL mới
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
@@ -19,7 +19,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public static synchronized AppDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    AppDatabase.class, "news_database")
+                            AppDatabase.class, "news_database")
+                    .createFromAsset("databases/news_database")
                     .fallbackToDestructiveMigration()
                     .build();
         }

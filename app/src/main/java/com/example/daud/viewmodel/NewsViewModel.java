@@ -16,17 +16,20 @@ public class NewsViewModel extends AndroidViewModel {
     private MutableLiveData<String> currentCategory = new MutableLiveData<>("Trang chủ");
     private LiveData<List<Article>> articles;
     private LiveData<List<Category>> categories;
+    private LiveData<List<Article>> savedArticles;
+    private LiveData<List<Article>> historyArticles;
 
     public NewsViewModel(@NonNull Application application) {
         super(application);
         repository = new NewsRepository(application);
         
-        // Transformations giúp tự động chuyển đổi LiveData dựa trên category hiện tại
         articles = Transformations.switchMap(currentCategory, category -> 
             repository.getArticlesByCategory(category)
         );
         
         categories = repository.getAllCategories();
+        savedArticles = repository.getSavedArticles();
+        historyArticles = repository.getHistoryArticles();
     }
 
     public LiveData<List<Article>> getArticles() {
@@ -35,6 +38,14 @@ public class NewsViewModel extends AndroidViewModel {
 
     public LiveData<List<Category>> getCategories() {
         return categories;
+    }
+
+    public LiveData<List<Article>> getSavedArticles() {
+        return savedArticles;
+    }
+
+    public LiveData<List<Article>> getHistoryArticles() {
+        return historyArticles;
     }
 
     public void setCategory(String category) {
@@ -47,5 +58,9 @@ public class NewsViewModel extends AndroidViewModel {
 
     public void insertCategories(List<Category> categories) {
         repository.insertCategories(categories);
+    }
+
+    public void updateArticle(Article article) {
+        repository.updateArticle(article);
     }
 }

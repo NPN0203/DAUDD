@@ -17,31 +17,39 @@ public class NewsRepository {
         AppDatabase db = AppDatabase.getInstance(application);
         articleDao = db.articleDao();
         categoryDao = db.categoryDao();
-        executorService = Executors.newFixedThreadPool(4); // Luồng xử lý ngầm chuyên nghiệp
+        executorService = Executors.newFixedThreadPool(4);
     }
 
-    // Lấy toàn bộ bài báo dưới dạng LiveData
     public LiveData<List<Article>> getAllArticles() {
         return articleDao.getAllArticles();
     }
 
-    // Lấy bài báo theo danh mục
     public LiveData<List<Article>> getArticlesByCategory(String category) {
         if (category.equals("Trang chủ")) return articleDao.getAllArticles();
         return articleDao.getArticlesByCategory(category);
     }
 
-    // Lấy toàn bộ danh mục
+    public LiveData<List<Article>> getSavedArticles() {
+        return articleDao.getSavedArticles();
+    }
+
+    public LiveData<List<Article>> getHistoryArticles() {
+        return articleDao.getHistoryArticles();
+    }
+
     public LiveData<List<Category>> getAllCategories() {
         return categoryDao.getAllCategories();
     }
 
-    // Chèn dữ liệu (Xử lý ngầm)
     public void insertArticles(List<Article> articles) {
         executorService.execute(() -> articleDao.insertArticles(articles));
     }
 
     public void insertCategories(List<Category> categories) {
         executorService.execute(() -> categoryDao.insertCategories(categories));
+    }
+
+    public void updateArticle(Article article) {
+        executorService.execute(() -> articleDao.updateArticle(article));
     }
 }

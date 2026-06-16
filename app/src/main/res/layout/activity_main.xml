@@ -210,58 +210,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/btnNavFootball"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
-            <ImageView
-                android:id="@+id/ivNavFootball"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/btn_star_big_on"
-                app:tint="#777777"
-                android:contentDescription="@null" />
-            <TextView
-                android:id="@+id/tvNavFootball"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tab_football"
-                android:textSize="11sp"
-                android:textColor="#777777" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnNavCoin"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
-            <ImageView
-                android:id="@+id/ivNavCoin"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_view"
-                app:tint="#777777"
-                android:contentDescription="@null" />
-            <TextView
-                android:id="@+id/tvNavCoin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_coin"
-                android:textSize="11sp"
-                android:textColor="#777777" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/btnNavProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"

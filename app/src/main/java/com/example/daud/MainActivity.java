@@ -1,5 +1,6 @@
 package com.example.daud;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -28,7 +29,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         setupTabs();
         setupChannelClicks();
         setupExploreUtilities();
+        setupProfileMenu();
         
         viewModel.getArticles().observe(this, articles -> {
             if (articles != null) {
@@ -145,6 +146,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setupProfileMenu() {
+        View btnMenuLuu = findViewById(R.id.btnMenuLuu);
+        if (btnMenuLuu != null) {
+            btnMenuLuu.setOnClickListener(v -> {
+                Intent intent = new Intent(this, SavedArticlesActivity.class);
+                intent.putExtra("nightMode", isNightMode);
+                startActivity(intent);
+            });
+        }
+
+        View btnMenuLichSu = findViewById(R.id.btnMenuLichSu);
+        if (btnMenuLichSu != null) {
+            btnMenuLichSu.setOnClickListener(v -> {
+                Intent intent = new Intent(this, HistoryActivity.class);
+                intent.putExtra("nightMode", isNightMode);
+                startActivity(intent);
+            });
+        }
+    }
+
     private void setupExploreUtilities() {
         if (utLunar != null) {
             String todayLunar = LunarCalendar.getTodayLunar();
@@ -190,14 +211,13 @@ public class MainActivity extends AppCompatActivity {
         
         int month = currentCalendar.get(Calendar.MONTH) + 1;
         int year = currentCalendar.get(Calendar.YEAR);
-        tvHeader.setText(getString(R.string.calendar_header_format, month, year));
+        tvHeader.setText("Tháng " + month + " / " + year);
 
         Calendar cal = (Calendar) currentCalendar.clone();
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // Sunday = 1, Monday = 2...
+        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
         int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        // 1. Padding for first week (Spacers)
         for (int i = 1; i < firstDayOfWeek; i++) {
             View spacer = new View(this);
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
@@ -208,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
             gridLayout.addView(spacer);
         }
 
-        // 2. Add Day Views
         for (int i = 1; i <= daysInMonth; i++) {
             View dayView = LayoutInflater.from(this).inflate(R.layout.item_calendar_day, gridLayout, false);
             TextView tvSolar = dayView.findViewById(R.id.tvSolarDay);
@@ -218,12 +237,10 @@ public class MainActivity extends AppCompatActivity {
             LunarCalendar.LunarDate ld = LunarCalendar.getLunarDate(i, cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
             tvLunar.setText(String.valueOf(ld.day));
             
-            // Show Month/Year if it's the 1st of the lunar month
             if (ld.day == 1) {
-                tvLunar.setText(getString(R.string.lunar_day_full_format, ld.day, ld.month));
+                tvLunar.setText(ld.day + "/" + ld.month);
             }
 
-            // Important: Use weight to distribute 7 columns evenly
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
             params.width = 0;
@@ -265,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         }
         
         TextView tvNightModeLabel = findViewById(R.id.tvNightMode);
-        if (tvNightModeLabel != null) tvNightModeLabel.setText(isNightMode ? R.string.night_mode_on : R.string.night_mode_off);
+        if (tvNightModeLabel != null) tvNightModeLabel.setText(isNightMode ? "Ban đêm: Bật" : "Ban đêm: Tắt");
 
         TextView tvChanTitle = findViewById(R.id.tvMyChannelsTitle);
         TextView tvChanDesc = findViewById(R.id.tvMyChannelsDesc);
@@ -283,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
             TextView tv = findViewById(id);
             if (tv != null) {
                 tv.setBackgroundColor(itemBg);
-                if (tv.getText().toString().equals(getString(R.string.tab_football))) tv.setTextColor(Color.RED);
+                if (tv.getText().toString().equals("Bóng đá")) tv.setTextColor(Color.RED);
                 else tv.setTextColor(textColor);
             }
         }
@@ -349,12 +366,12 @@ public class MainActivity extends AppCompatActivity {
             String categoryName = ((TextView)v).getText().toString();
             
             int tabId = -1;
-            if (categoryName.equals(getString(R.string.tab_home))) tabId = R.id.tabTrangChu;
-            else if (categoryName.equals(getString(R.string.tab_football))) tabId = R.id.tabBongDa;
-            else if (categoryName.equals(getString(R.string.tab_video))) tabId = R.id.tabVideo;
-            else if (categoryName.equals(getString(R.string.tab_social))) tabId = R.id.tabXaHoi;
-            else if (categoryName.equals(getString(R.string.tab_entertainment))) tabId = R.id.tabGiaiTri;
-            else if (categoryName.equals(getString(R.string.tab_world))) tabId = R.id.tabTheGioi;
+            if (categoryName.equals("Trang chủ")) tabId = R.id.tabTrangChu;
+            else if (categoryName.equals("Bóng đá")) tabId = R.id.tabBongDa;
+            else if (categoryName.equals("Video")) tabId = R.id.tabVideo;
+            else if (categoryName.equals("Xã hội")) tabId = R.id.tabXaHoi;
+            else if (categoryName.equals("Giải trí")) tabId = R.id.tabGiaiTri;
+            else if (categoryName.equals("Thế giới")) tabId = R.id.tabTheGioi;
             
             switchCategory(tabId, categoryName);
         };
@@ -389,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeDefaultData() {
-        viewModel.insertCategories(Arrays.asList(new Category(getString(R.string.tab_home), true), new Category(getString(R.string.tab_football), true)));
+        viewModel.insertCategories(Arrays.asList(new Category("Trang chủ", true), new Category("Bóng đá", true)));
         viewModel.insertArticles(Collections.singletonList(new Article("Chào mừng", "Hệ thống", "Bây giờ", null, 1, "Chào mừng bạn đến với ứng dụng tin tức.")));
     }
 

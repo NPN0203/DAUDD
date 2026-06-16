@@ -24,6 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".NewsDetailActivity" />
+        <activity android:name=".SavedArticlesActivity" />
+        <activity android:name=".HistoryActivity" />
     </application>
 
 </manifest>

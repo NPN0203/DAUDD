@@ -8,21 +8,24 @@ import androidx.room.TypeConverters;
 import com.example.daud.model.Article;
 import com.example.daud.model.Category;
 
-@Database(entities = {Article.class, Category.class}, version = 6) // Tăng lên 5 để nhận diện cấu trúc CSDL mới
+@Database(entities = {Article.class, Category.class}, version = 12, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
-    private static AppDatabase instance;
+    private static volatile AppDatabase instance;
 
     public abstract ArticleDao articleDao();
     public abstract CategoryDao categoryDao();
 
-    public static synchronized AppDatabase getInstance(Context context) {
+    public static AppDatabase getInstance(Context context) {
         if (instance == null) {
-            instance = Room.databaseBuilder(context.getApplicationContext(),
-                            AppDatabase.class, "news_database")
-                    .createFromAsset("databases/news_database")
-                    .fallbackToDestructiveMigration()
-                    .build();
+            synchronized (AppDatabase.class) {
+                if (instance == null) {
+                    instance = Room.databaseBuilder(context.getApplicationContext(),
+                                    AppDatabase.class, "daud_news_stable.db")
+                            .fallbackToDestructiveMigration()
+                            .build();
+                }
+            }
         }
         return instance;
     }

@@ -28,12 +28,12 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(NewsViewModel.class);
 
+        // Khởi tạo các View
         View root = findViewById(R.id.newsDetailRoot);
         TextView tvTitle = findViewById(R.id.tvDetailTitle);
         TextView tvSourceTime = findViewById(R.id.tvDetailSourceTime);
         TextView tvContent = findViewById(R.id.tvDetailContent);
         ImageView ivImage = findViewById(R.id.ivDetailImage);
-        
         ImageView btnBack = findViewById(R.id.btnBack);
         View topBar = findViewById(R.id.topBar);
         LinearLayout btnSave = findViewById(R.id.btnSave);
@@ -42,78 +42,85 @@ public class NewsDetailActivity extends AppCompatActivity {
         tvSave = findViewById(R.id.tvSave);
         View bottomBar = findViewById(R.id.bottomBar);
 
+        // Nhận dữ liệu
         article = (Article) getIntent().getSerializableExtra("article");
         boolean isNightMode = getIntent().getBooleanExtra("nightMode", false);
 
-        // Xử lý chế độ ban đêm
-        if (isNightMode) {
-            root.setBackgroundColor(Color.BLACK);
-            tvTitle.setTextColor(Color.WHITE);
-            tvSourceTime.setTextColor(Color.LTGRAY);
-            tvContent.setTextColor(Color.WHITE);
-            bottomBar.setBackgroundColor(Color.parseColor("#1A1A1A"));
-            if (topBar != null) topBar.setBackgroundColor(Color.BLACK);
-            if (btnBack != null) btnBack.setColorFilter(Color.WHITE);
-        } else {
-            root.setBackgroundColor(Color.WHITE);
-            tvTitle.setTextColor(Color.BLACK);
-            tvSourceTime.setTextColor(Color.GRAY);
-            tvContent.setTextColor(Color.parseColor("#333333"));
-            bottomBar.setBackgroundColor(Color.WHITE);
-            if (topBar != null) topBar.setBackgroundColor(Color.WHITE);
-            if (btnBack != null) btnBack.setColorFilter(Color.BLACK);
+        // Áp dụng Night Mode (Kiểm tra null cho chắc chắn)
+        if (root != null) {
+            if (isNightMode) {
+                root.setBackgroundColor(Color.BLACK);
+                if (tvTitle != null) tvTitle.setTextColor(Color.WHITE);
+                if (tvSourceTime != null) tvSourceTime.setTextColor(Color.LTGRAY);
+                if (tvContent != null) tvContent.setTextColor(Color.WHITE);
+                if (bottomBar != null) bottomBar.setBackgroundColor(Color.parseColor("#1A1A1A"));
+                if (topBar != null) topBar.setBackgroundColor(Color.BLACK);
+                if (btnBack != null) btnBack.setColorFilter(Color.WHITE);
+            } else {
+                root.setBackgroundColor(Color.WHITE);
+                if (tvTitle != null) tvTitle.setTextColor(Color.BLACK);
+                if (tvSourceTime != null) tvSourceTime.setTextColor(Color.GRAY);
+                if (tvContent != null) tvContent.setTextColor(Color.parseColor("#333333"));
+                if (bottomBar != null) bottomBar.setBackgroundColor(Color.WHITE);
+                if (topBar != null) topBar.setBackgroundColor(Color.WHITE);
+                if (btnBack != null) btnBack.setColorFilter(Color.BLACK);
+            }
         }
 
-        // 1. CODE ĐỂ QUAY LẠI: Đặt ở đây để luôn hoạt động
+        // Xử lý nút Back (Kiểm tra null để không bị văng app)
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> finish());
         }
 
         if (article != null) {
-            // Cập nhật thời gian đọc bài
-            article.setLastReadTime(System.currentTimeMillis());
-            viewModel.updateArticle(article);
-
-            tvTitle.setText(article.getTitle());
-            tvSourceTime.setText(String.format("%s - %s", article.getSource(), article.getTimeOrComment()));
-            tvContent.setText(article.getContent());
+            // Cập nhật dữ liệu lên giao diện
+            if (tvTitle != null) tvTitle.setText(article.getTitle());
+            if (tvSourceTime != null) tvSourceTime.setText(String.format("%s - %s", article.getSource(), article.getTimeOrComment()));
+            if (tvContent != null) tvContent.setText(article.getContent());
+            
             updateSaveUI();
 
-            if (article.getImages() != null && !article.getImages().isEmpty()) {
+            if (ivImage != null && article.getImages() != null && !article.getImages().isEmpty()) {
                 Glide.with(this).load(article.getImages().get(0)).into(ivImage);
             }
 
-            // Xử lý nút lưu bài báo
-            btnSave.setOnClickListener(v -> {
-                article.setSaved(!article.isSaved());
-                viewModel.updateArticle(article);
-                updateSaveUI();
-                String msg = article.isSaved() ? "Đã lưu bài báo" : "Đã bỏ lưu bài báo";
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-            });
+            // Cập nhật lịch sử đọc
+            article.setLastReadTime(System.currentTimeMillis());
+            viewModel.updateArticle(article);
 
-            // Xử lý nút chia sẻ
-            btnShare.setOnClickListener(v -> {
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, article.getTitle());
-                shareIntent.putExtra(Intent.EXTRA_TEXT, article.getTitle() + "\n\n" + article.getContent());
-                startActivity(Intent.createChooser(shareIntent, "Chia sẻ bài báo qua"));
-            });
+            // Xử lý nút Save
+            if (btnSave != null) {
+                btnSave.setOnClickListener(v -> {
+                    article.setSaved(!article.isSaved());
+                    viewModel.updateArticle(article);
+                    updateSaveUI();
+                    Toast.makeText(this, article.isSaved() ? "Đã lưu" : "Đã bỏ lưu", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            // Xử lý nút Share
+            if (btnShare != null) {
+                btnShare.setOnClickListener(v -> {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_TEXT, article.getTitle() + "\n" + article.getContent());
+                    startActivity(Intent.createChooser(intent, "Chia sẻ"));
+                });
+            }
         }
     }
 
     private void updateSaveUI() {
-        if (article.isSaved()) {
-            ivSave.setImageResource(android.R.drawable.ic_menu_save);
-            ivSave.setColorFilter(Color.parseColor("#D32F2F"));
-            tvSave.setTextColor(Color.parseColor("#D32F2F"));
-            tvSave.setText("Đã lưu");
-        } else {
-            ivSave.setImageResource(android.R.drawable.ic_menu_save);
-            ivSave.setColorFilter(Color.GRAY);
-            tvSave.setTextColor(Color.GRAY);
-            tvSave.setText("Lưu");
+        if (article != null && ivSave != null && tvSave != null) {
+            if (article.isSaved()) {
+                ivSave.setColorFilter(Color.parseColor("#D32F2F"));
+                tvSave.setTextColor(Color.parseColor("#D32F2F"));
+                tvSave.setText("Đã lưu");
+            } else {
+                ivSave.setColorFilter(Color.GRAY);
+                tvSave.setTextColor(Color.GRAY);
+                tvSave.setText("Lưu");
+            }
         }
     }
 }

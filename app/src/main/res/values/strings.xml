@@ -48,4 +48,13 @@
     <string name="calendar_header_format">Tháng %1$02d/%2$d</string>
     <string name="lunar_day_full_format">%1$d/%2$d</string>
     <string name="close_dialog">Đóng</string>
+
+    <!-- News Detail -->
+    <string name="news_detail_title">Chi tiết bài báo</string>
+    <string name="action_save">Lưu</string>
+    <string name="action_share">Chia sẻ</string>
+    <string name="desc_back">Quay lại</string>
+    <string name="desc_article_image">Ảnh bài báo</string>
+    <string name="desc_save_icon">Biểu tượng lưu</string>
+    <string name="desc_share_icon">Biểu tượng chia sẻ</string>
 </resources>

@@ -212,12 +212,14 @@ public class MainActivity extends AppCompatActivity {
             String name = ((TextView) v).getText().toString();
             showPage(homeContainer);
             int tabId = -1;
-            if (name.equals("Trang chủ")) tabId = R.id.tabTrangChu;
-            else if (name.equals("Bóng đá")) tabId = R.id.tabBongDa;
-            else if (name.equals("Video")) tabId = R.id.tabVideo;
-            else if (name.equals("Xã hội")) tabId = R.id.tabXaHoi;
-            else if (name.equals("Giải trí")) tabId = R.id.tabGiaiTri;
-            else if (name.equals("Thế giới")) tabId = R.id.tabTheGioi;
+            switch (name) {
+                case "Trang chủ": tabId = R.id.tabTrangChu; break;
+                case "Bóng đá": tabId = R.id.tabBongDa; break;
+                case "Video": tabId = R.id.tabVideo; break;
+                case "Xã hội": tabId = R.id.tabXaHoi; break;
+                case "Giải trí": tabId = R.id.tabGiaiTri; break;
+                case "Thế giới": tabId = R.id.tabTheGioi; break;
+            }
             switchCategory(tabId, name);
         };
         for (int id : allChannelIds) {
@@ -268,15 +270,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Update other text colors in profile
-        int[] textIds = {
-                R.id.tvTheoDoi, R.id.tvThongBao, R.id.menuLuu, R.id.menuLichSu,
-                R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName, R.id.tvUserStatus, R.id.menuAdmin
-        };
+        int[] textIds = {R.id.tvTheoDoi, R.id.tvThongBao, R.id.menuLuu, R.id.menuLichSu,
+                R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName, R.id.tvUserStatus, R.id.menuAdmin};
+        
         for (int id : textIds) {
             TextView tv = findViewById(id);
             if (tv != null) tv.setTextColor(textColor);
         }
-
+        
         TextView tvFooterId = findViewById(R.id.tvFooterId);
         if (tvFooterId != null) tvFooterId.setTextColor(secondaryTextColor);
 

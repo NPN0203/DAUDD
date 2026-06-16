@@ -12,8 +12,7 @@ import com.example.daud.model.Article;
 import com.example.daud.model.Category;
 import com.example.daud.model.User;
 
-@Database(entities = {Article.class, Category.class, User.class}, version = 15, exportSchema = false)
-@Database(entities = {Article.class, Category.class}, version = 12, exportSchema = false)
+@Database(entities = {Article.class, Category.class, User.class}, version = 16, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
@@ -46,6 +45,8 @@ public abstract class AppDatabase extends RoomDatabase {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "daud_news_stable.db")
                             .createFromAsset("databases/daud_news_stable.db")
+                            .addMigrations(MIGRATION_10_16)
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

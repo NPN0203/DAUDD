@@ -10,18 +10,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.daud.adapter.NewsAdapter;
 import com.example.daud.model.Article;
 import com.example.daud.model.Category;
-import com.example.daud.util.LunarCalendar;
 import com.example.daud.viewmodel.NewsViewModel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -271,16 +268,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Update other text colors in profile
-        int[] textIds = {R.id.tvTheoDoi, R.id.tvThongBao, R.id.menuLuu, R.id.menuLichSu,
-                R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName, R.id.tvUserStatus, R.id.menuAdmin};
-                R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName};
+        int[] textIds = {
+                R.id.tvTheoDoi, R.id.tvThongBao, R.id.menuLuu, R.id.menuLichSu,
+                R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName, R.id.tvUserStatus, R.id.menuAdmin
+        };
         for (int id : textIds) {
             TextView tv = findViewById(id);
             if (tv != null) tv.setTextColor(textColor);
         }
+
         TextView tvFooterId = findViewById(R.id.tvFooterId);
         if (tvFooterId != null) tvFooterId.setTextColor(secondaryTextColor);
-
 
         TextView tvUserSubStatus = findViewById(R.id.tvUserSubStatus);
         if (tvUserSubStatus != null) tvUserSubStatus.setTextColor(secondaryTextColor);

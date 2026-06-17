@@ -156,23 +156,6 @@
 
         <View android:id="@+id/divider1" android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" />
 
-        <!-- Admin Panel (Only for admins) -->
-        <LinearLayout
-            android:id="@+id/btnAdminPanel"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="20dp"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_dialog_info" app:tint="#D32F2F" android:contentDescription="@null" />
-            <TextView android:id="@+id/menuAdmin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quản trị viên" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" android:textStyle="bold" />
-        </LinearLayout>
-
-        <View android:id="@+id/dividerAdmin" android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:visibility="gone" />
-
         <!-- Menu items -->
         <LinearLayout
             android:id="@+id/btnMenuLuu"
@@ -198,6 +181,63 @@
             android:focusable="true">
             <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#FBC02D" android:contentDescription="@null" />
             <TextView android:id="@+id/menuLichSu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lịch sử" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" />
+        </LinearLayout>
+
+        <!-- Hoạt động gần đây -->
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" />
+        <TextView
+            android:id="@+id/tvHoatDongHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hoạt động gần đây"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"
+            android:textSize="13sp"
+            android:textColor="#999999"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/btnMenuLiked"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/btn_star_big_on" app:tint="#FF5252" android:contentDescription="@null" />
+            <TextView android:id="@+id/menuLiked" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bài báo đã thích" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnMenuCommented"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/stat_notify_chat" app:tint="#448AFF" android:contentDescription="@null" />
+            <TextView android:id="@+id/menuCommented" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bình luận gần đây" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" />
+        </LinearLayout>
+
+        <View android:id="@+id/dividerAdmin" android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" />
+
+        <!-- Admin Panel (Only for admins) -->
+        <LinearLayout
+            android:id="@+id/btnAdminPanel"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_dialog_info" app:tint="#D32F2F" android:contentDescription="@null" />
+            <TextView android:id="@+id/menuAdmin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quản trị viên" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" android:textStyle="bold" />
         </LinearLayout>
 
         <View android:id="@+id/divider2" android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" />

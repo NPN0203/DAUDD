@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         
         SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         currentUserId = pref.getInt("userId", -1);
+        isNightMode = pref.getBoolean("nightMode", false);
         viewModel.setUserId(currentUserId);
 
         initViews();
@@ -67,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         setupTabs();
         setupSearch();
         observeData();
+        
+        if (isNightMode) applyNightMode();
     }
 
     private void setupSlider() {
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateProfileUI();
+        if (isNightMode) applyNightMode();
     }
 
     private void initViews() {
@@ -140,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         if (rvNews != null) {
             rvNews.setLayoutManager(new LinearLayoutManager(this));
             adapter = new NewsAdapter(articleList);
+            adapter.setNightMode(isNightMode);
             rvNews.setAdapter(adapter);
         }
     }
@@ -172,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
         View btnCloseChan = findViewById(R.id.btnCloseChannels);
         if (btnCloseChan != null) btnCloseChan.setOnClickListener(v -> channelsContainer.setVisibility(View.GONE));
 
-        // Mở màn hình Thông báo
         findViewById(R.id.btnThongBaoMe).setOnClickListener(v -> {
             if (currentUserId != -1) {
                 startActivity(new Intent(this, NotificationActivity.class));
@@ -206,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
             if (!isLoggedIn) {
                 startActivity(new Intent(this, LoginActivity.class));
             } else {
-                // Mở màn hình sửa thông tin
                 startActivity(new Intent(this, EditProfileActivity.class));
             }
         });
@@ -219,12 +222,23 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
         });
         
-        // Cập nhật sự kiện cho các nút menu khác
         rootProfile.findViewById(R.id.btnMenuLuu).setOnClickListener(v -> 
             startActivity(new Intent(this, SavedArticlesActivity.class).putExtra("nightMode", isNightMode)));
         rootProfile.findViewById(R.id.btnMenuLichSu).setOnClickListener(v -> 
             startActivity(new Intent(this, HistoryActivity.class).putExtra("nightMode", isNightMode)));
+        
+        rootProfile.findViewById(R.id.btnMenuLiked).setOnClickListener(v -> 
+            startActivity(new Intent(this, LikedArticlesActivity.class).putExtra("nightMode", isNightMode)));
+        rootProfile.findViewById(R.id.btnMenuCommented).setOnClickListener(v -> 
+            startActivity(new Intent(this, CommentedArticlesActivity.class).putExtra("nightMode", isNightMode)));
+            
         rootProfile.findViewById(R.id.btnNightMode).setOnClickListener(v -> toggleNightMode());
+        
+        if (isNightMode) {
+            ((TextView) rootProfile.findViewById(R.id.tvNightMode)).setText("Chế độ sáng");
+        } else {
+            ((TextView) rootProfile.findViewById(R.id.tvNightMode)).setText("Ban đêm");
+        }
     }
 
     private void showPage(View page) {
@@ -268,7 +282,70 @@ public class MainActivity extends AppCompatActivity {
     
     private void toggleNightMode() {
         isNightMode = !isNightMode;
-        // Logic đổi màu đã có sẵn trong MainActivity trước đó
+        getSharedPreferences("UserPrefs", MODE_PRIVATE).edit()
+            .putBoolean("nightMode", isNightMode).apply();
+        applyNightMode();
+    }
+
+    private void applyNightMode() {
+        int bgColor = isNightMode ? Color.parseColor("#121212") : Color.parseColor("#EEEEEE");
+        int cardColor = isNightMode ? Color.parseColor("#1E1E1E") : Color.WHITE;
+        int textColor = isNightMode ? Color.WHITE : Color.BLACK;
+        int subTextColor = isNightMode ? Color.LTGRAY : Color.GRAY;
+        int headerColor = isNightMode ? Color.BLACK : Color.parseColor("#D32F2F");
+
+        findViewById(R.id.mainLayout).setBackgroundColor(bgColor);
+        findViewById(R.id.headerBar).setBackgroundColor(headerColor);
+        findViewById(R.id.categoryBar).setBackgroundColor(cardColor);
+        findViewById(R.id.bottomNav).setBackgroundColor(cardColor);
+        
+        if (adapter != null) {
+            adapter.setNightMode(isNightMode);
+        }
+        
+        if (recommendationAdapter != null) {
+            recommendationAdapter.setNightMode(isNightMode);
+        }
+        
+        View rootExplore = findViewById(R.id.exploreRoot);
+        if (rootExplore != null) {
+            rootExplore.setBackgroundColor(bgColor);
+            int[] exploreTexts = {R.id.tvTrendingHeader, R.id.tvUtilitiesHeader, R.id.tvSuggestionHeader, R.id.tvExploreSuggestionTitle};
+            for (int id : exploreTexts) {
+                TextView tv = rootExplore.findViewById(id);
+                if (tv != null) tv.setTextColor(textColor);
+            }
+        }
+        
+        View rootProfile = findViewById(R.id.profileRootLayout);
+        if (rootProfile != null) {
+            rootProfile.setBackgroundColor(bgColor);
+            ((TextView) rootProfile.findViewById(R.id.tvUserStatus)).setTextColor(textColor);
+            ((TextView) rootProfile.findViewById(R.id.tvNightMode)).setText(isNightMode ? "Chế độ sáng" : "Ban đêm");
+            ((ImageView) rootProfile.findViewById(R.id.ivNightMode)).setColorFilter(isNightMode ? Color.YELLOW : Color.parseColor("#4FC3F7"));
+            
+            int[] menuTextIds = {
+                R.id.menuLuu, R.id.menuLichSu, R.id.menuPhanHoi, R.id.menuCaiDat, 
+                R.id.tvTheoDoi, R.id.tvThongBao, R.id.menuLiked, R.id.menuCommented,
+                R.id.tvHoatDongHeader
+            };
+            for (int id : menuTextIds) {
+                View v = rootProfile.findViewById(id);
+                if (v instanceof TextView) {
+                    if (id == R.id.tvHoatDongHeader) {
+                        ((TextView) v).setTextColor(isNightMode ? Color.GRAY : Color.parseColor("#999999"));
+                    } else {
+                        ((TextView) v).setTextColor(textColor);
+                    }
+                }
+            }
+        }
+        
+        if (etSearch != null) {
+            etSearch.setTextColor(textColor);
+            etSearch.setHintTextColor(isNightMode ? Color.LTGRAY : Color.GRAY);
+        }
+
         updateNavUI(profileContainer.getVisibility() == View.VISIBLE ? R.id.profileContainer : R.id.homeContainer);
     }
 

@@ -33,7 +33,6 @@ public class NewsRepository {
         return articleDao.getAllArticles();
     }
 
-    // Bổ sung phương thức bị thiếu
     public LiveData<Article> getArticleById(int id) {
         return articleDao.getArticleById(id);
     }
@@ -73,6 +72,14 @@ public class NewsRepository {
 
     public LiveData<List<Article>> getHistoryArticlesByUser(int userId) {
         return articleDao.getHistoryArticlesByUser(userId);
+    }
+
+    public LiveData<List<Article>> getLikedArticlesByUser(int userId) {
+        return articleDao.getLikedArticlesByUser(userId);
+    }
+
+    public LiveData<List<Article>> getCommentedArticlesByUser(int userId) {
+        return articleDao.getCommentedArticlesByUser(userId);
     }
 
     public LiveData<List<Category>> getAllCategories() {

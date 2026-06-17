@@ -27,6 +27,8 @@
         <activity android:name=".NewsDetailActivity" />
         <activity android:name=".SavedArticlesActivity" />
         <activity android:name=".HistoryActivity" />
+        <activity android:name=".LikedArticlesActivity" />
+        <activity android:name=".CommentedArticlesActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".AdminActivity" />

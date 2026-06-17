@@ -99,6 +99,14 @@ public class NewsViewModel extends AndroidViewModel {
         return repository.getHistoryArticlesByUser(userId);
     }
 
+    public LiveData<List<Article>> getLikedArticles(int userId) {
+        return repository.getLikedArticlesByUser(userId);
+    }
+
+    public LiveData<List<Article>> getCommentedArticles(int userId) {
+        return repository.getCommentedArticlesByUser(userId);
+    }
+
     public LiveData<List<Notification>> getNotifications() {
         return Transformations.switchMap(currentUserId, userId -> 
             repository.getNotifications(userId)

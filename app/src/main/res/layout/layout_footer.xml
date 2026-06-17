@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="?android:attr/colorBackground">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DAUD NEWS"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ứng dụng đọc tin tức tổng hợp nhanh nhất"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:textColor="?android:attr/textColorSecondary" />
+
+    <View
+        android:layout_width="100dp"
+        android:layout_height="1dp"
+        android:background="#D32F2F"
+        android:layout_marginVertical="12dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="© 2024 DAUD Team - All Rights Reserved"
+        android:textSize="12sp"
+        android:textColor="?android:attr/textColorSecondary" />
+
+</LinearLayout>

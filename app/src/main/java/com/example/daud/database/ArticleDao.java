@@ -36,6 +36,12 @@ public interface ArticleDao {
     @Query("SELECT a.* FROM articles a INNER JOIN user_article_interactions uai ON a.id = uai.articleId WHERE uai.userId = :userId AND uai.lastReadTime > 0 ORDER BY uai.lastReadTime DESC")
     LiveData<List<Article>> getHistoryArticlesByUser(int userId);
 
+    @Query("SELECT a.* FROM articles a INNER JOIN user_article_interactions uai ON a.id = uai.articleId WHERE uai.userId = :userId AND uai.isLiked = 1")
+    LiveData<List<Article>> getLikedArticlesByUser(int userId);
+
+    @Query("SELECT DISTINCT a.* FROM articles a INNER JOIN comments c ON a.id = c.articleId WHERE c.userId = :userId ORDER BY c.timestamp DESC")
+    LiveData<List<Article>> getCommentedArticlesByUser(int userId);
+
     @Update
     void updateArticle(Article article);
 

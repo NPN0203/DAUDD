@@ -11,8 +11,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.daud.model.Article;
 import com.example.daud.model.Category;
 import com.example.daud.model.User;
+import com.example.daud.model.Comment;
+import com.example.daud.model.UserArticleInteraction;
+import com.example.daud.model.Notification;
 
-@Database(entities = {Article.class, Category.class, User.class}, version = 16, exportSchema = false)
+@Database(entities = {Article.class, Category.class, User.class, Comment.class, UserArticleInteraction.class, Notification.class}, version = 19, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
@@ -20,21 +23,30 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ArticleDao articleDao();
     public abstract CategoryDao categoryDao();
     public abstract UserDao userDao();
+    public abstract CommentDao commentDao();
+    public abstract UserArticleInteractionDao userArticleInteractionDao();
+    public abstract NotificationDao notificationDao();
 
-    // Di cư từ bản gốc (10) lên bản mới nhất (16) để thêm bảng users và các cột cần thiết
-    static final Migration MIGRATION_10_16 = new Migration(10, 16) {
+    static final Migration MIGRATION_16_17 = new Migration(16, 17) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Thêm bảng users nếu chưa có
-            database.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `username` TEXT, `password` TEXT, `fullName` TEXT, `isAdmin` INTEGER NOT NULL DEFAULT 0)");
+            database.execSQL("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `articleId` INTEGER NOT NULL, `userId` INTEGER NOT NULL, `username` TEXT, `content` TEXT, `timestamp` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `likes` INTEGER NOT NULL, `dislikes` INTEGER NOT NULL)");
+            database.execSQL("CREATE TABLE IF NOT EXISTS `user_article_interactions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `articleId` INTEGER NOT NULL, `isSaved` INTEGER NOT NULL, `lastReadTime` INTEGER NOT NULL, `isLiked` INTEGER NOT NULL, `isDisliked` INTEGER NOT NULL)");
+        }
+    };
 
-            // Kiểm tra và thêm cột vào bảng articles nếu cần (để tránh lỗi khi thêm tính năng Lưu/Lịch sử)
-            try {
-                database.execSQL("ALTER TABLE articles ADD COLUMN isSaved INTEGER NOT NULL DEFAULT 0");
-            } catch (Exception ignored) {}
-            try {
-                database.execSQL("ALTER TABLE articles ADD COLUMN lastReadTime INTEGER NOT NULL DEFAULT 0");
-            } catch (Exception ignored) {}
+    static final Migration MIGRATION_17_18 = new Migration(17, 18) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `notifications` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `title` TEXT, `message` TEXT, `timestamp` INTEGER NOT NULL, `isRead` INTEGER NOT NULL)");
+        }
+    };
+
+    static final Migration MIGRATION_18_19 = new Migration(18, 19) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE articles ADD COLUMN likes INTEGER NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE articles ADD COLUMN dislikes INTEGER NOT NULL DEFAULT 0");
         }
     };
 
@@ -44,8 +56,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "daud_news_stable.db")
-                            .createFromAsset("databases/daud_news_stable.db")
-                            .addMigrations(MIGRATION_10_16)
+                            .addMigrations(MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19)
                             .fallbackToDestructiveMigration()
                             .build();
                 }

@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:background="?attr/selectableItemBackground"
     android:padding="12dp"
-    android:layout_marginBottom="1dp">
+    android:layout_marginBottom="1dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -25,7 +27,8 @@
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
         android:weightSum="3"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        android:baselineAligned="false">
 
         <ImageView
             android:id="@+id/ivImage1"
@@ -33,7 +36,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:layout_marginEnd="2dp" />
+            android:layout_marginEnd="2dp"
+            android:contentDescription="@null" />
 
         <ImageView
             android:id="@+id/ivImage2"
@@ -41,14 +45,16 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:layout_marginEnd="2dp" />
+            android:layout_marginEnd="2dp"
+            android:contentDescription="@null" />
 
         <ImageView
             android:id="@+id/ivImage3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:contentDescription="@null" />
     </LinearLayout>
 
     <TextView

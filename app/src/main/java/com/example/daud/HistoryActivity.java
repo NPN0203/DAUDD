@@ -1,7 +1,9 @@
 package com.example.daud;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,13 +19,13 @@ public class HistoryActivity extends AppCompatActivity {
 
     private NewsAdapter adapter;
     private TextView tvHistoryCount;
+    private NewsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        // Nhận trạng thái Night Mode
         boolean isNightMode = getIntent().getBooleanExtra("nightMode", false);
         applyNightMode(isNightMode);
 
@@ -38,36 +40,39 @@ public class HistoryActivity extends AppCompatActivity {
         adapter.setNightMode(isNightMode);
         rvHistory.setAdapter(adapter);
 
-        NewsViewModel viewModel = new ViewModelProvider(this).get(NewsViewModel.class);
-        viewModel.getHistoryArticles().observe(this, articles -> {
-            if (articles != null) {
-                adapter.setArticleList(articles);
-                if (articles.isEmpty()) {
-                    tvHistoryCount.setText("Hôm nay chưa đọc bài nào");
-                } else {
-                    String text = String.format(Locale.getDefault(), "Hôm nay đã đọc %d bài", articles.size());
-                    tvHistoryCount.setText(text);
+        SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = pref.getInt("userId", -1);
+
+        viewModel = new ViewModelProvider(this).get(NewsViewModel.class);
+        
+        if (userId != -1) {
+            viewModel.getHistoryArticles(userId).observe(this, articles -> {
+                if (articles != null) {
+                    adapter.setArticleList(articles);
+                    if (articles.isEmpty()) {
+                        tvHistoryCount.setText("Chưa có lịch sử đọc");
+                    } else {
+                        tvHistoryCount.setText(String.format(Locale.getDefault(), "Đã đọc %d bài", articles.size()));
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            tvHistoryCount.setText("Vui lòng đăng nhập để xem lịch sử");
+        }
     }
 
     private void applyNightMode(boolean isNightMode) {
         int bgColor = isNightMode ? Color.BLACK : Color.WHITE;
         int textColor = isNightMode ? Color.WHITE : Color.BLACK;
-        int secondaryBg = isNightMode ? Color.parseColor("#121212") : Color.parseColor("#F9F9F9");
-
-        // Áp dụng màu nền cho root (cần ID trong layout hoặc dùng content view)
-        getWindow().getDecorView().setBackgroundColor(bgColor);
+        
+        View root = findViewById(R.id.historyRoot); // Assuming there's a root ID or use android.R.id.content
+        if (root != null) root.setBackgroundColor(bgColor);
+        else getWindow().getDecorView().setBackgroundColor(bgColor);
         
         TextView tvTitle = findViewById(R.id.tvHistoryHeaderTitle);
         if (tvTitle != null) tvTitle.setTextColor(textColor);
 
-        ImageView ivBack = findViewById(R.id.btnBack);
-        if (ivBack != null) ivBack.setColorFilter(textColor);
-
         if (tvHistoryCount != null) {
-            tvHistoryCount.setBackgroundColor(secondaryBg);
             tvHistoryCount.setTextColor(isNightMode ? Color.GRAY : Color.parseColor("#777777"));
         }
     }

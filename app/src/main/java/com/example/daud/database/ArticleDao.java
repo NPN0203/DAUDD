@@ -21,14 +21,20 @@ public interface ArticleDao {
     @Query("SELECT * FROM articles ORDER BY id DESC")
     LiveData<List<Article>> getAllArticles();
 
+    @Query("SELECT * FROM articles WHERE id = :id")
+    LiveData<Article> getArticleById(int id);
+
     @Query("SELECT * FROM articles WHERE source = :categoryName")
     LiveData<List<Article>> getArticlesByCategory(String categoryName);
 
-    @Query("SELECT * FROM articles WHERE isSaved = 1")
-    LiveData<List<Article>> getSavedArticles();
+    @Query("SELECT * FROM articles WHERE title LIKE :query OR source LIKE :query")
+    LiveData<List<Article>> searchArticles(String query);
 
-    @Query("SELECT * FROM articles WHERE lastReadTime > 0 ORDER BY lastReadTime DESC")
-    LiveData<List<Article>> getHistoryArticles();
+    @Query("SELECT a.* FROM articles a INNER JOIN user_article_interactions uai ON a.id = uai.articleId WHERE uai.userId = :userId AND uai.isSaved = 1")
+    LiveData<List<Article>> getSavedArticlesByUser(int userId);
+
+    @Query("SELECT a.* FROM articles a INNER JOIN user_article_interactions uai ON a.id = uai.articleId WHERE uai.userId = :userId AND uai.lastReadTime > 0 ORDER BY uai.lastReadTime DESC")
+    LiveData<List<Article>> getHistoryArticlesByUser(int userId);
 
     @Update
     void updateArticle(Article article);

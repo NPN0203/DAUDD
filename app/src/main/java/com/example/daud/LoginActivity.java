@@ -45,7 +45,8 @@ public class LoginActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (user != null) {
                     SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                    pref.edit().putString("username", user.getUsername())
+                    pref.edit().putInt("userId", user.getId())
+                               .putString("username", user.getUsername())
                                .putString("fullName", user.getFullName())
                                .putBoolean("isLoggedIn", true)
                                .putBoolean("isAdmin", user.isAdmin())

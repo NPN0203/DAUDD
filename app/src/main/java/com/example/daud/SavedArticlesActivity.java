@@ -1,8 +1,11 @@
 package com.example.daud;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,16 +17,15 @@ import java.util.ArrayList;
 public class SavedArticlesActivity extends AppCompatActivity {
 
     private NewsAdapter adapter;
+    private NewsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saved_articles);
 
-        // Nhận trạng thái Night Mode từ Intent
         boolean isNightMode = getIntent().getBooleanExtra("nightMode", false);
-        applyNightMode(isNightMode);
-
+        
         ImageView btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
 
@@ -32,25 +34,33 @@ public class SavedArticlesActivity extends AppCompatActivity {
         
         adapter = new NewsAdapter(new ArrayList<>());
         adapter.setNightMode(isNightMode);
-        rvNewsAdapterSetNightMode(isNightMode); // Đảm bảo adapter biết chế độ hiển thị
         rvSaved.setAdapter(adapter);
 
-        NewsViewModel viewModel = new ViewModelProvider(this).get(NewsViewModel.class);
-        viewModel.getSavedArticles().observe(this, articles -> {
-            if (articles != null) {
-                adapter.setArticleList(articles);
-            }
-        });
-    }
+        applyNightMode(isNightMode);
 
-    private void rvNewsAdapterSetNightMode(boolean isNightMode) {
-        if (adapter != null) {
-            adapter.setNightMode(isNightMode);
+        SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = pref.getInt("userId", -1);
+
+        viewModel = new ViewModelProvider(this).get(NewsViewModel.class);
+        
+        if (userId != -1) {
+            viewModel.getSavedArticles(userId).observe(this, articles -> {
+                if (articles != null) {
+                    adapter.setArticleList(articles);
+                }
+            });
         }
     }
 
     private void applyNightMode(boolean isNightMode) {
         int bgColor = isNightMode ? Color.BLACK : Color.WHITE;
-        findViewById(android.R.id.content).getRootView().setBackgroundColor(bgColor);
+        View root = findViewById(R.id.savedRoot);
+        if (root != null) root.setBackgroundColor(bgColor);
+        
+        TextView tvTitle = findViewById(R.id.tvSavedHeaderTitle);
+        if (tvTitle != null) tvTitle.setTextColor(isNightMode ? Color.WHITE : Color.BLACK);
+        
+        ImageView btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) btnBack.setColorFilter(isNightMode ? Color.WHITE : Color.BLACK);
     }
 }

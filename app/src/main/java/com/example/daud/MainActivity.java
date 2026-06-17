@@ -5,7 +5,12 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,13 +18,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 import com.example.daud.adapter.NewsAdapter;
+import com.example.daud.adapter.RecommendationAdapter;
 import com.example.daud.model.Article;
-import com.example.daud.model.Category;
 import com.example.daud.viewmodel.NewsViewModel;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,16 +38,17 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivNavHome, ivNavExplore, ivNavProfile;
     private TextView tvNavHome, tvNavExplore, tvNavProfile;
     private TextView tabTrangChu, tabBongDa, tabVideo, tabXaHoi, tabGiaiTri, tabTheGioi;
+    private EditText etSearch, etExploreSearch;
+
+    private ViewPager2 vpRecommendation;
+    private RecommendationAdapter recommendationAdapter;
+    private final List<Article> recommendationList = new ArrayList<>();
+    private Timer timer;
+    private final Handler sliderHandler = new Handler(Looper.getMainLooper());
 
     private NewsViewModel viewModel;
     private boolean isNightMode = false;
-
-    private final int[] allChannelIds = {
-            R.id.chanTrangChu, R.id.chanBongDa, R.id.chanXaHoi, R.id.chanGiaiTri, R.id.chanTheGioi,
-            R.id.chanKinhTe, R.id.chanCongNghe, R.id.chanThoiTrang, R.id.chanTheThao, R.id.chanPhapLuat,
-            R.id.chanDuLich, R.id.chanGame, R.id.chanSucKhoe, R.id.chanAmThuc, R.id.chanXeCo,
-            R.id.chanDoiSong, R.id.chanGiaoDuc, R.id.chanHotGirls, R.id.chanLamDep, R.id.chanTinhYeu
-    };
+    private int currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +56,55 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         viewModel = new ViewModelProvider(this).get(NewsViewModel.class);
         
+        SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        currentUserId = pref.getInt("userId", -1);
+        viewModel.setUserId(currentUserId);
+
         initViews();
         setupRecyclerView();
+        setupSlider();
         setupNavigation();
         setupTabs();
-        setupChannelClicks();
+        setupSearch();
         observeData();
+    }
+
+    private void setupSlider() {
+        recommendationAdapter = new RecommendationAdapter(recommendationList, article -> {
+            Intent intent = new Intent(this, NewsDetailActivity.class);
+            intent.putExtra("article", article);
+            intent.putExtra("nightMode", isNightMode);
+            startActivity(intent);
+        });
+        vpRecommendation.setAdapter(recommendationAdapter);
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sliderHandler.post(() -> {
+                    if (vpRecommendation != null && !recommendationList.isEmpty()) {
+                        int nextItem = (vpRecommendation.getCurrentItem() + 1) % recommendationList.size();
+                        vpRecommendation.setCurrentItem(nextItem, true);
+                    }
+                });
+            }
+        }, 2000, 2000);
+    }
+
+    private void setupSearch() {
+        TextWatcher searchWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.setSearchQuery(s.toString());
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+        if (etSearch != null) etSearch.addTextChangedListener(searchWatcher);
+        if (etExploreSearch != null) etExploreSearch.addTextChangedListener(searchWatcher);
     }
 
     @Override
@@ -79,6 +130,9 @@ public class MainActivity extends AppCompatActivity {
         tabXaHoi = findViewById(R.id.tabXaHoi);
         tabGiaiTri = findViewById(R.id.tabGiaiTri);
         tabTheGioi = findViewById(R.id.tabTheGioi);
+        etSearch = findViewById(R.id.etSearch);
+        etExploreSearch = findViewById(R.id.etExploreSearch);
+        vpRecommendation = findViewById(R.id.vpRecommendation);
     }
 
     private void setupRecyclerView() {
@@ -96,12 +150,13 @@ public class MainActivity extends AppCompatActivity {
                 articleList.clear();
                 articleList.addAll(articles);
                 if (adapter != null) adapter.notifyDataSetChanged();
-                if (rvNews != null) rvNews.scrollToPosition(0);
-            }
-        });
-        viewModel.getCategories().observe(this, categories -> {
-            if (categories == null || categories.isEmpty()) {
-                viewModel.insertCategories(Arrays.asList(new Category("Trang chủ", true), new Category("Bóng đá", true)));
+                
+                if (recommendationList.isEmpty() && articles.size() > 0) {
+                    for (int i = 0; i < Math.min(5, articles.size()); i++) {
+                        recommendationList.add(articles.get(i));
+                    }
+                    recommendationAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
@@ -110,35 +165,21 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnNavHome).setOnClickListener(v -> showPage(homeContainer));
         findViewById(R.id.btnNavExplore).setOnClickListener(v -> showPage(exploreContainer));
         findViewById(R.id.btnNavProfile).setOnClickListener(v -> showPage(profileContainer));
+        
         View btnOpen = findViewById(R.id.btnOpenChannels);
         if (btnOpen != null) btnOpen.setOnClickListener(v -> channelsContainer.setVisibility(View.VISIBLE));
+        
         View btnCloseChan = findViewById(R.id.btnCloseChannels);
         if (btnCloseChan != null) btnCloseChan.setOnClickListener(v -> channelsContainer.setVisibility(View.GONE));
-        
-        View rootProfile = findViewById(R.id.profileRootLayout);
-        if (rootProfile != null) {
-            rootProfile.findViewById(R.id.btnNightMode).setOnClickListener(v -> toggleNightMode());
-            rootProfile.findViewById(R.id.btnMenuLuu).setOnClickListener(v -> startActivity(new Intent(this, SavedArticlesActivity.class).putExtra("nightMode", isNightMode)));
-            rootProfile.findViewById(R.id.btnMenuLichSu).setOnClickListener(v -> startActivity(new Intent(this, HistoryActivity.class).putExtra("nightMode", isNightMode)));
 
-            rootProfile.findViewById(R.id.loginHeader).setOnClickListener(v -> {
-                SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                if (!pref.getBoolean("isLoggedIn", false)) {
-                    startActivity(new Intent(this, LoginActivity.class));
-                }
-            });
-
-            rootProfile.findViewById(R.id.btnLogout).setOnClickListener(v -> {
-                SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                pref.edit().clear().apply();
-                updateProfileUI();
-                Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
-            });
-
-            rootProfile.findViewById(R.id.btnAdminPanel).setOnClickListener(v -> {
-                startActivity(new Intent(this, AdminActivity.class));
-            });
-        }
+        // Mở màn hình Thông báo
+        findViewById(R.id.btnThongBaoMe).setOnClickListener(v -> {
+            if (currentUserId != -1) {
+                startActivity(new Intent(this, NotificationActivity.class));
+            } else {
+                Toast.makeText(this, "Vui lòng đăng nhập để xem thông báo", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void updateProfileUI() {
@@ -147,38 +188,43 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences pref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         boolean isLoggedIn = pref.getBoolean("isLoggedIn", false);
-        boolean isAdmin = pref.getBoolean("isAdmin", false);
+        currentUserId = pref.getInt("userId", -1);
+        viewModel.setUserId(currentUserId);
+        
         String fullName = pref.getString("fullName", "Đăng nhập / Đăng ký");
         String username = pref.getString("username", "");
 
         TextView tvUserStatus = rootProfile.findViewById(R.id.tvUserStatus);
         TextView tvUserSubStatus = rootProfile.findViewById(R.id.tvUserSubStatus);
         ImageView btnLogout = rootProfile.findViewById(R.id.btnLogout);
-        ImageView ivUserAvatar = rootProfile.findViewById(R.id.ivUserAvatar);
-        View btnAdminPanel = rootProfile.findViewById(R.id.btnAdminPanel);
-        View dividerAdmin = rootProfile.findViewById(R.id.dividerAdmin);
 
-        if (isLoggedIn) {
-            tvUserStatus.setText(fullName);
-            tvUserSubStatus.setText("@" + username);
-            btnLogout.setVisibility(View.VISIBLE);
-            ivUserAvatar.setColorFilter(Color.RED);
+        tvUserStatus.setText(fullName);
+        tvUserSubStatus.setText(isLoggedIn ? "@" + username : "Bấm để đăng nhập và đồng bộ");
+        btnLogout.setVisibility(isLoggedIn ? View.VISIBLE : View.GONE);
 
-            if (isAdmin) {
-                btnAdminPanel.setVisibility(View.VISIBLE);
-                dividerAdmin.setVisibility(View.VISIBLE);
+        rootProfile.findViewById(R.id.loginHeader).setOnClickListener(v -> {
+            if (!isLoggedIn) {
+                startActivity(new Intent(this, LoginActivity.class));
             } else {
-                btnAdminPanel.setVisibility(View.GONE);
-                dividerAdmin.setVisibility(View.GONE);
+                // Mở màn hình sửa thông tin
+                startActivity(new Intent(this, EditProfileActivity.class));
             }
-        } else {
-            tvUserStatus.setText("Đăng nhập / Đăng ký");
-            tvUserSubStatus.setText("Bấm để đăng nhập và đồng bộ");
-            btnLogout.setVisibility(View.GONE);
-            ivUserAvatar.setColorFilter(Color.LTGRAY);
-            btnAdminPanel.setVisibility(View.GONE);
-            dividerAdmin.setVisibility(View.GONE);
-        }
+        });
+
+        btnLogout.setOnClickListener(v -> {
+            pref.edit().clear().apply();
+            currentUserId = -1;
+            viewModel.setUserId(-1);
+            updateProfileUI();
+            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+        });
+        
+        // Cập nhật sự kiện cho các nút menu khác
+        rootProfile.findViewById(R.id.btnMenuLuu).setOnClickListener(v -> 
+            startActivity(new Intent(this, SavedArticlesActivity.class).putExtra("nightMode", isNightMode)));
+        rootProfile.findViewById(R.id.btnMenuLichSu).setOnClickListener(v -> 
+            startActivity(new Intent(this, HistoryActivity.class).putExtra("nightMode", isNightMode)));
+        rootProfile.findViewById(R.id.btnNightMode).setOnClickListener(v -> toggleNightMode());
     }
 
     private void showPage(View page) {
@@ -207,27 +253,6 @@ public class MainActivity extends AppCompatActivity {
         for (TextView t : tabs) if (t != null) t.setOnClickListener(listener);
     }
 
-    private void setupChannelClicks() {
-        View.OnClickListener listener = v -> {
-            String name = ((TextView) v).getText().toString();
-            showPage(homeContainer);
-            int tabId = -1;
-            switch (name) {
-                case "Trang chủ": tabId = R.id.tabTrangChu; break;
-                case "Bóng đá": tabId = R.id.tabBongDa; break;
-                case "Video": tabId = R.id.tabVideo; break;
-                case "Xã hội": tabId = R.id.tabXaHoi; break;
-                case "Giải trí": tabId = R.id.tabGiaiTri; break;
-                case "Thế giới": tabId = R.id.tabTheGioi; break;
-            }
-            switchCategory(tabId, name);
-        };
-        for (int id : allChannelIds) {
-            View v = findViewById(id);
-            if (v != null) v.setOnClickListener(listener);
-        }
-    }
-
     private void switchCategory(int id, String name) {
         int active = Color.RED;
         int inactive = isNightMode ? Color.LTGRAY : Color.DKGRAY;
@@ -240,55 +265,16 @@ public class MainActivity extends AppCompatActivity {
         }
         viewModel.setCategory(name);
     }
-
+    
     private void toggleNightMode() {
         isNightMode = !isNightMode;
-        int bgColor = isNightMode ? Color.BLACK : Color.WHITE;
-        int textColor = isNightMode ? Color.WHITE : Color.parseColor("#333333");
-        int secondaryTextColor = isNightMode ? Color.LTGRAY : Color.GRAY;
+        // Logic đổi màu đã có sẵn trong MainActivity trước đó
+        updateNavUI(profileContainer.getVisibility() == View.VISIBLE ? R.id.profileContainer : R.id.homeContainer);
+    }
 
-        homeContainer.setBackgroundColor(bgColor);
-        exploreContainer.setBackgroundColor(bgColor);
-        profileContainer.setBackgroundColor(bgColor);
-        channelsContainer.setBackgroundColor(bgColor);
-
-        // Update background of components inside layout_profile.xml
-        View profileScroll = findViewById(R.id.profileScrollView);
-        if (profileScroll != null) profileScroll.setBackgroundColor(bgColor);
-
-        View categoryBar = findViewById(R.id.categoryBar);
-        if (categoryBar != null) categoryBar.setBackgroundColor(bgColor);
-
-        View bottomNav = findViewById(R.id.bottomNav);
-        if (bottomNav != null) bottomNav.setBackgroundColor(bgColor);
-
-        // Update Button text and color
-        TextView tvNightMode = findViewById(R.id.tvNightMode);
-        if (tvNightMode != null) {
-            tvNightMode.setText(isNightMode ? "Ban ngày" : "Ban đêm");
-            tvNightMode.setTextColor(textColor);
-        }
-
-        // Update other text colors in profile
-        int[] textIds = {R.id.tvTheoDoi, R.id.tvThongBao, R.id.menuLuu, R.id.menuLichSu,
-                R.id.menuPhanHoi, R.id.menuCaiDat, R.id.tvFooterName, R.id.tvUserStatus, R.id.menuAdmin};
-        
-        for (int id : textIds) {
-            TextView tv = findViewById(id);
-            if (tv != null) tv.setTextColor(textColor);
-        }
-        
-        TextView tvFooterId = findViewById(R.id.tvFooterId);
-        if (tvFooterId != null) tvFooterId.setTextColor(secondaryTextColor);
-
-        TextView tvUserSubStatus = findViewById(R.id.tvUserSubStatus);
-        if (tvUserSubStatus != null) tvUserSubStatus.setTextColor(secondaryTextColor);
-
-        if (adapter != null) {
-            adapter.setNightMode(isNightMode);
-            adapter.notifyDataSetChanged();
-        }
-
-        showPage(profileContainer);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (timer != null) timer.cancel();
     }
 }

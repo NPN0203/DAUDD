@@ -8,7 +8,6 @@
     android:background="#EEEEEE"
     tools:context=".MainActivity">
 
-    <!-- Container cho Trang Chủ (Tin tức) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/homeContainer"
         android:layout_width="match_parent"
@@ -35,28 +34,37 @@
                 android:background="@android:color/white"
                 android:gravity="center_vertical"
                 android:paddingStart="12dp"
-                android:paddingEnd="12dp">
+                android:paddingEnd="12dp"
+                android:elevation="2dp">
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_search"
                     app:tint="#999999"
                     android:contentDescription="@null" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/search_hint"
-                    android:textColor="#999999"
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Tìm kiếm tin tức, chủ đề..."
+                    android:textColor="#333333"
+                    android:textColorHint="#999999"
+                    android:background="@null"
                     android:layout_marginStart="8dp"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:importantForAutofill="no" />
             </LinearLayout>
 
             <ImageView
+                android:id="@+id/btnCalendar"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="12dp"
                 android:src="@android:drawable/ic_menu_today"
                 app:tint="@android:color/white"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@null" />
         </LinearLayout>
 
@@ -83,12 +91,12 @@
                     android:gravity="center_vertical"
                     android:paddingHorizontal="8dp"
                     android:baselineAligned="false">
-                    <TextView android:id="@+id/tabTrangChu" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="@string/tab_home" android:textColor="#D32F2F" android:textStyle="bold" android:gravity="center" android:paddingHorizontal="12dp" />
-                    <TextView android:id="@+id/tabBongDa" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="@string/tab_football" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" />
-                    <TextView android:id="@+id/tabVideo" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="@string/tab_video" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" />
-                    <TextView android:id="@+id/tabXaHoi" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="@string/tab_social" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" />
-                    <TextView android:id="@+id/tabGiaiTri" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="@string/tab_entertainment" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" />
-                    <TextView android:id="@+id/tabTheGioi" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="@string/tab_world" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" />
+                    <TextView android:id="@+id/tabTrangChu" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="Trang chủ" android:textColor="#D32F2F" android:textStyle="bold" android:gravity="center" android:paddingHorizontal="12dp" android:background="?attr/selectableItemBackground" />
+                    <TextView android:id="@+id/tabBongDa" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="Bóng đá" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" android:background="?attr/selectableItemBackground" />
+                    <TextView android:id="@+id/tabVideo" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="Video" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" android:background="?attr/selectableItemBackground" />
+                    <TextView android:id="@+id/tabXaHoi" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="Xã hội" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" android:background="?attr/selectableItemBackground" />
+                    <TextView android:id="@+id/tabGiaiTri" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="Giải trí" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" android:background="?attr/selectableItemBackground" />
+                    <TextView android:id="@+id/tabTheGioi" android:layout_width="wrap_content" android:layout_height="match_parent" android:text="Thế giới" android:textColor="#555555" android:gravity="center" android:paddingHorizontal="12dp" android:background="?attr/selectableItemBackground" />
                 </LinearLayout>
             </HorizontalScrollView>
 
@@ -105,48 +113,57 @@
                 android:contentDescription="@null" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvNews"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="2dp"
+            android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@id/categoryBar"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <!-- ViewPager2 for Auto-sliding Recommendations -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpRecommendation"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="8dp"
+                    android:visibility="visible" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvNews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+                <!-- Spacer View để đẩy footer xuống đáy màn hình khi kết quả tìm kiếm ít -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Footer cho Trang Chủ -->
+                <include layout="@layout/layout_footer" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Container cho Trang Khám Phá -->
-    <FrameLayout
-        android:id="@+id/exploreContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav">
+    <FrameLayout android:id="@+id/exploreContainer" android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toTopOf="@id/bottomNav">
         <include layout="@layout/layout_explore" />
     </FrameLayout>
 
-    <!-- Container cho Trang Cá Nhân (Tôi) -->
-    <FrameLayout
-        android:id="@+id/profileContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav">
+    <FrameLayout android:id="@+id/profileContainer" android:layout_width="match_parent" android:layout_height="0dp" android:visibility="gone" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toTopOf="@id/bottomNav">
         <include layout="@layout/layout_profile" />
     </FrameLayout>
 
-    <!-- Container cho Trang "Kênh của tôi" (Modal đè lên) -->
-    <FrameLayout
-        android:id="@+id/channelsContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#FFFFFF">
+    <FrameLayout android:id="@+id/channelsContainer" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone" android:background="#FFFFFF">
         <include layout="@layout/layout_channels" />
     </FrameLayout>
 
-    <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
@@ -156,83 +173,17 @@
         android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:baselineAligned="false">
-
-        <LinearLayout
-            android:id="@+id/btnNavHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
-            <ImageView
-                android:id="@+id/ivNavHome"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_today"
-                app:tint="#D32F2F"
-                android:contentDescription="@null" />
-            <TextView
-                android:id="@+id/tvNavHome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_home"
-                android:textSize="11sp"
-                android:textColor="#D32F2F" />
+        <LinearLayout android:id="@+id/btnNavHome" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical" android:background="?attr/selectableItemBackground">
+            <ImageView android:id="@+id/ivNavHome" android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_today" app:tint="#D32F2F" android:contentDescription="@null" />
+            <TextView android:id="@+id/tvNavHome" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Trang chủ" android:textSize="11sp" android:textColor="#D32F2F" />
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnNavExplore"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
-            <ImageView
-                android:id="@+id/ivNavExplore"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_compass"
-                app:tint="#777777"
-                android:contentDescription="@null" />
-            <TextView
-                android:id="@+id/tvNavExplore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_explore"
-                android:textSize="11sp"
-                android:textColor="#777777" />
+        <LinearLayout android:id="@+id/btnNavExplore" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical" android:background="?attr/selectableItemBackground">
+            <ImageView android:id="@+id/ivNavExplore" android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_compass" app:tint="#777777" android:contentDescription="@null" />
+            <TextView android:id="@+id/tvNavExplore" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Khám phá" android:textSize="11sp" android:textColor="#777777" />
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnNavProfile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
-            <ImageView
-                android:id="@+id/ivNavProfile"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@android:drawable/ic_menu_myplaces"
-                app:tint="#777777"
-                android:contentDescription="@null" />
-            <TextView
-                android:id="@+id/tvNavProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_me"
-                android:textSize="11sp"
-                android:textColor="#777777" />
+        <LinearLayout android:id="@+id/btnNavProfile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical" android:background="?attr/selectableItemBackground">
+            <ImageView android:id="@+id/ivNavProfile" android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#777777" android:contentDescription="@null" />
+            <TextView android:id="@+id/tvNavProfile" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tôi" android:textSize="11sp" android:textColor="#777777" />
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

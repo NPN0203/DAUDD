@@ -28,7 +28,8 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@android:drawable/ic_menu_myplaces"
-                app:tint="#BBBBBB" />
+                app:tint="#BBBBBB"
+                android:contentDescription="@null" />
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -57,12 +58,16 @@
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_lock_power_off"
                 app:tint="#777777"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@null" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" />
 
-        <!-- Top Header -->
+        <!-- Top Header Items -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,16 +75,21 @@
             android:paddingVertical="20dp">
 
             <LinearLayout
+                android:id="@+id/btnTheoDoi"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@android:drawable/ic_menu_share"
-                    app:tint="#FF8A65" />
+                    app:tint="#FF8A65"
+                    android:contentDescription="@null" />
                 <TextView
                     android:id="@+id/tvTheoDoi"
                     android:layout_width="wrap_content"
@@ -91,16 +101,21 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnThongBaoMe"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@android:drawable/ic_popup_reminder"
-                    app:tint="#7986CB" />
+                    app:tint="#7986CB"
+                    android:contentDescription="@null" />
                 <TextView
                     android:id="@+id/tvThongBao"
                     android:layout_width="wrap_content"
@@ -126,7 +141,8 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@android:drawable/ic_menu_month"
-                    app:tint="#4FC3F7" />
+                    app:tint="#4FC3F7"
+                    android:contentDescription="@null" />
                 <TextView
                     android:id="@+id/tvNightMode"
                     android:layout_width="wrap_content"
@@ -151,7 +167,7 @@
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_dialog_info" app:tint="#D32F2F" />
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_dialog_info" app:tint="#D32F2F" android:contentDescription="@null" />
             <TextView android:id="@+id/menuAdmin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quản trị viên" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" android:textStyle="bold" />
         </LinearLayout>
 
@@ -167,7 +183,7 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_save" app:tint="#D32F2F" />
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_save" app:tint="#D32F2F" android:contentDescription="@null" />
             <TextView android:id="@+id/menuLuu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lưu" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" />
         </LinearLayout>
 
@@ -180,32 +196,40 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#FBC02D" />
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#FBC02D" android:contentDescription="@null" />
             <TextView android:id="@+id/menuLichSu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lịch sử" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" />
         </LinearLayout>
 
         <View android:id="@+id/divider2" android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" />
 
         <LinearLayout
+            android:id="@+id/btnPhanHoi"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center_vertical"
-            android:paddingHorizontal="20dp">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_help" app:tint="#BBBBBB" />
+            android:paddingHorizontal="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_help" app:tint="#BBBBBB" android:contentDescription="@null" />
             <TextView android:id="@+id/menuPhanHoi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tôi muốn phản hồi" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/btnCaiDat"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center_vertical"
-            android:paddingHorizontal="20dp">
-            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_preferences" app:tint="#BBBBBB" />
+            android:paddingHorizontal="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_preferences" app:tint="#BBBBBB" android:contentDescription="@null" />
             <TextView android:id="@+id/menuCaiDat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cài đặt" android:layout_marginStart="20dp" android:textSize="16sp" android:textColor="#333333" />
         </LinearLayout>
 
         <!-- Banner Ad -->
-        <ImageView android:layout_width="match_parent" android:layout_height="220dp" android:layout_margin="16dp" android:scaleType="centerCrop" android:src="@android:drawable/presence_video_online" />
+        <ImageView android:layout_width="match_parent" android:layout_height="220dp" android:layout_margin="16dp" android:scaleType="centerCrop" android:src="@android:drawable/presence_video_online" android:contentDescription="@null" />
 
         <!-- Footer -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">

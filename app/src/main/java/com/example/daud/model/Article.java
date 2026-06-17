@@ -23,6 +23,8 @@ public class Article implements Serializable {
     private int viewType;
     private String content;
     private boolean isSaved;
+    private int likes;
+    private int dislikes;
 
     @ColumnInfo(name = "lastReadTime") // Đảm bảo Room tìm đúng cột này
     private long lastReadTime;
@@ -36,6 +38,8 @@ public class Article implements Serializable {
         this.content = content;
         this.isSaved = false;
         this.lastReadTime = 0;
+        this.likes = 0;
+        this.dislikes = 0;
     }
 
     public int getId() { return id; }
@@ -51,4 +55,8 @@ public class Article implements Serializable {
     public void setSaved(boolean saved) { isSaved = saved; }
     public long getLastReadTime() { return lastReadTime; }
     public void setLastReadTime(long lastReadTime) { this.lastReadTime = lastReadTime; }
+    public int getLikes() { return likes; }
+    public void setLikes(int likes) { this.likes = likes; }
+    public int getDislikes() { return dislikes; }
+    public void setDislikes(int dislikes) { this.dislikes = dislikes; }
 }
